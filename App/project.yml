@@ -1,0 +1,48 @@
+# XcodeGen spec for the FM Script Paste app (D17). Generate with:
+#   xcodegen generate --spec App/project.yml
+# The generated App/FMScriptPaste.xcodeproj is not committed.
+name: FMScriptPaste
+options:
+  bundleIdPrefix: io.github.ariera
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # Dev builds are ad-hoc signed; Developer ID signing is Phase 6.
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    DEVELOPMENT_TEAM: ""
+    ENABLE_HARDENED_RUNTIME: NO
+    DEAD_CODE_STRIPPING: YES
+packages:
+  fmscript2xml:
+    path: ..
+  KeyboardShortcuts:
+    url: https://github.com/sindresorhus/KeyboardShortcuts
+    from: 2.0.0
+targets:
+  FMScriptPaste:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources
+    dependencies:
+      - package: fmscript2xml
+        product: FMScriptKit
+      - package: fmscript2xml
+        product: FMClipboard
+      - package: KeyboardShortcuts
+    settings:
+      base:
+        PRODUCT_NAME: FM Script Paste
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.ariera.fmscriptpaste
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_LSUIElement: YES
+        INFOPLIST_KEY_CFBundleDisplayName: FM Script Paste
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera. GPL-3.0-or-later."

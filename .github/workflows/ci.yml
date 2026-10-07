@@ -25,3 +25,14 @@ jobs:
       - name: Test (public fixtures only)
         if: hashFiles('Package.swift') != ''
         run: swift test
+
+  app:
+    name: Build app
+    runs-on: macos-latest
+    needs: fixture-location
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Build
+        run: tools/build-app.sh Debug
