@@ -7,7 +7,8 @@
 /// typographic quotes unified and a trailing "…" ignored, and ranked by
 /// Damerau–Levenshtein distance (a transposition counts as one edit). A
 /// candidate qualifies when the distance is at most max(2, 25% of the
-/// length); ties go to the longer shared prefix.
+/// length); ties go to the longer shared prefix. A name that extends another
+/// by a suffix (at least six characters in common) also qualifies.
 public struct StepNameSuggester: Sendable {
     /// Common shorthands and old names → registry names.
     public static let aliases: [String: String] = [
@@ -83,11 +84,17 @@ public struct StepNameSuggester: Sendable {
         }
         let threshold = max(2, key.count / 4)
         for c in candidates {
+            let prefix = Self.sharedPrefix(key, c.key)
+            // One name extends the other (e.g. "Layoutname" → "Layout")
+            if min(key.count, c.key.count) >= 6 && prefix == min(key.count, c.key.count) && key != c.key {
+                ranked.append((c.display, threshold, prefix))
+                continue
+            }
             // Cheap bound: the distance is at least the length difference
             guard abs(c.key.count - key.count) <= threshold else { continue }
             let d = Self.distance(key, c.key)
             if d <= threshold {
-                ranked.append((c.display, d, Self.sharedPrefix(key, c.key)))
+                ranked.append((c.display, d, prefix))
             }
         }
         ranked.sort { ($0.distance, -$0.prefix, $0.display) < ($1.distance, -$1.prefix, $1.display) }

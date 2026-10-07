@@ -240,9 +240,10 @@ public struct Converter: Sendable {
         var result: [Diagnostic] = []
 
         if !(handler is GenericHandler) {
-            let labels = handler.knownLabels.union(handler.ignoredLabels)
+            let ignored = handler.ignoredLabels.union(commonIgnoredLabels)
+            let labels = handler.knownLabels.union(ignored)
             for key in step.params.keys where !key.pyIsDigit && !labels.contains(key) {
-                let candidates = StepNameSuggester(names: Array(labels)).suggestions(for: key)
+                let candidates = StepNameSuggester(names: handler.knownLabels.sorted(), aliases: [:]).suggestions(for: key)
                 var message = "“\(key)” isn’t a parameter of \(def.name); it was ignored."
                 var suggestion: Suggestion?
                 if let best = candidates.first {
@@ -255,9 +256,9 @@ public struct Converter: Sendable {
                 ))
             }
             if !handler.allowsDuplicateLabels {
-                for key in Set(step.duplicateKeys).sorted() {
+                for key in Set(step.duplicateKeys).sorted() where !ignored.contains(key) {
                     result.append(Diagnostic(
-                        .warning, .duplicateParameter, lines: step.lines,
+                        .info, .duplicateParameter, lines: step.lines,
                         message: "“\(key)” is given more than once; only the last value is used."
                     ))
                 }

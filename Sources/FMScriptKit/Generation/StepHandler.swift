@@ -18,6 +18,9 @@ protocol StepHandler: Sendable {
     var allowsDuplicateLabels: Bool { get }
 }
 
+/// Labels FileMaker writes on many steps that don't affect the XML.
+let commonIgnoredLabels: Set<String> = ["Collapsed"]
+
 extension StepHandler {
     var ignoredLabels: Set<String> { [] }
     var allowsDuplicateLabels: Bool { false }

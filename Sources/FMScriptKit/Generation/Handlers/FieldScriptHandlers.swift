@@ -40,6 +40,7 @@ struct SetFieldHandler: StepHandler {
 
 struct SetFieldByNameHandler: StepHandler {
     var knownLabels: Set<String> { [] }
+    var ignoredLabels: Set<String> { ["Specify target field"] }
 
     func generate(_ step: ParsedStep, _ def: StepDefinition) -> [XElement] {
         var e = XMLBuilder.step(def, step)
@@ -72,6 +73,7 @@ func isCalculatedScript(specified: String?, name: String?) throws(HandlerError) 
 
 struct PerformScriptHandler: StepHandler {
     var knownLabels: Set<String> { ["Parameter", "Script", "Specified"] }
+    var ignoredLabels: Set<String> { ["File", "From file"] }
 
     func generate(_ step: ParsedStep, _ def: StepDefinition) -> [XElement] {
         var elements: [XElement] = []

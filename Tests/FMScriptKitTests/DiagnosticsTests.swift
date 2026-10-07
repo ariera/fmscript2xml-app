@@ -79,13 +79,25 @@ import Testing
         #expect(d.suggestion?.apply(to: text) == "Set Variable [ $x ; Value: 1 ]")
     }
 
+    @Test func validButUnconvertedLabelsAreSilent() {
+        #expect(converter.convert("If [ $x ; Collapsed: ON ]\nElse [ Collapsed: OFF ; Collapsed: OFF ]\nEnd If").diagnostics.isEmpty)
+        #expect(converter.convert("New Window [ Style: Document ; Name: \"w\" ; Toolbar: No ; Menu: No ]").diagnostics.isEmpty)
+    }
+
+    @Test func layoutnameOnGoToLayoutIsFlagged() {
+        let d = converter.convert("Go to Layout [ Layoutname: $l ]").warnings
+        #expect(d.map(\.code) == [.unknownParameter])
+        #expect(d.first?.suggestion?.replacement == "Layout:")
+    }
+
     @Test func genericStepsAcceptAnyLabel() {
         #expect(converter.convert("Insert from URL [ Select ; With dialog: Off ; Target: $r ; \"https://x\" ]").status == .ok)
     }
 
     @Test func duplicateParameter() {
         let result = converter.convert("Show Custom Dialog [ Title: \"a\" ; Title: \"b\" ]")
-        #expect(result.warnings.map(\.code) == [.duplicateParameter])
+        #expect(result.diagnostics.map(\.code) == [.duplicateParameter])
+        #expect(result.status == .ok)
         #expect(converter.convert(
             "Perform Script on Server with Callback [ Specified: From list ; “A” ; Parameter: 1 ; Callback script specified: From list ; “B” ; Parameter: 2 ; State: Continue ]"
         ).warnings.isEmpty)

@@ -6,6 +6,10 @@
 
 struct NewWindowHandler: StepHandler {
     var knownLabels: Set<String> { ["Name", "Height", "Width", "Top", "Left", "Style"] }
+    var ignoredLabels: Set<String> {
+        ["Using layout", "Layout", "Layoutname", "Close", "Minimize", "Maximize", "Resize",
+         "Toolbar", "Toolbars", "Menu", "Menu Bar", "Dim parent window"]
+    }
 
     // Style → (Style attr, Close, Minimize, Maximize, Resize, Styles bitmask)
     private static let styles: [String: [String]] = [
