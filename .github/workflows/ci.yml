@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  fixture-location:
+    name: Fixture location check (D14)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: tools/check-fixtures.sh --tracked
+
+  test:
+    name: Build and test
+    runs-on: macos-latest
+    needs: fixture-location
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        if: hashFiles('Package.swift') != ''
+        run: swift build
+      - name: Test (public fixtures only)
+        if: hashFiles('Package.swift') != ''
+        run: swift test

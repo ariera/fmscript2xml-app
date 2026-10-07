@@ -1,0 +1,12 @@
+.DS_Store
+.build/
+.swiftpm/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+build/
+*.dmg
+
+# Production FileMaker scripts must never be committed (see PLAN.md §9)
+Tests/Fixtures/private/
+*.private.txt

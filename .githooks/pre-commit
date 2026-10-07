@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Rejects commits that would add production FileMaker scripts (PLAN.md D14).
+# Enable with: git config core.hooksPath .githooks
+exec "$(git rev-parse --show-toplevel)/tools/check-fixtures.sh" --staged
