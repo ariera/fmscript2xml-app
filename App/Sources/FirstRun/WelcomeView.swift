@@ -13,9 +13,9 @@ struct WelcomeView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 12) {
-                Image(systemName: "list.bullet.clipboard")
-                    .font(.system(size: 36))
-                    .foregroundStyle(.tint)
+                Image(nsImage: NSApp.applicationIconImage)
+                    .resizable()
+                    .frame(width: 56, height: 56)
                 VStack(alignment: .leading) {
                     Text(Branding.appName).font(.title.bold())
                     Text("Plain-text script steps in, FileMaker steps out.")

@@ -368,7 +368,9 @@ Exit: daily use replaces the Automator Quick Action.
 
 ### Phase 6 — Packaging and release
 
-- [ ] App icon, About window (converter version, links).
+- [ ] App icon, About window (converter version, links). *Icon done early
+      (2026-10-07): drawn by `tools/icon/make-icons.swift`, which writes the
+      app icon, the menu bar template icon and docs/logo.png.*
 - [ ] EMBO Developer ID signing, hardened runtime, notarization, DMG.
 - [ ] Local release script `tools/release.sh`, run on Alejandro's Mac (Q6):
       build → `codesign` with EMBO's Developer ID Application certificate

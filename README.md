@@ -1,3 +1,5 @@
+<img src="docs/logo.png" width="128" alt="FM Script Paste logo" align="right">
+
 # FM Script Paste
 
 A macOS menu bar app that converts plain-text FileMaker script steps on the

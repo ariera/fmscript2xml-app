@@ -41,6 +41,7 @@ targets:
       base:
         PRODUCT_NAME: FM Script Paste
         PRODUCT_BUNDLE_IDENTIFIER: io.github.ariera.fmscriptpaste
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_LSUIElement: YES
         INFOPLIST_KEY_CFBundleDisplayName: FM Script Paste

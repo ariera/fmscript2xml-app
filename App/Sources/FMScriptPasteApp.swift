@@ -10,8 +10,12 @@ struct FMScriptPasteApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        MenuBarExtra(Branding.appName, systemImage: "list.bullet.clipboard") {
+        MenuBarExtra {
             MenuContent()
+        } label: {
+            // Template image: macOS tints it for light/dark menu bars
+            Image("MenuBarIcon")
+                .accessibilityLabel(Branding.appName)
         }
         .menuBarExtraStyle(.menu)
 
