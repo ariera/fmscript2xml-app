@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Script includeInMenu="False" runFullAccess="False" id="1" name="FM Script Paste spike (XMSC)">
+    <Step enable="True" id="89" name="Comment">
+      <Text> Whole script pasted from the XMSC flavor</Text>
+    </Step>
+    <Step enable="True" id="93" name="Beep"/>
+  </Script>
+</fmxmlsnippet>

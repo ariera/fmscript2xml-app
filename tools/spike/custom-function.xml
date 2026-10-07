@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <CustomFunction id="1" functionArity="1" visible="True" parameters="x" name="SpikeDouble">
+    <Calculation><![CDATA[x * 2]]></Calculation>
+  </CustomFunction>
+</fmxmlsnippet>
