@@ -13,10 +13,23 @@ Planned features:
 - No dependency on Python, and FileMaker doesn't need to be installed for the
   conversion
 
-Status: **planning**. See [PLAN.md](PLAN.md).
+Status: **in development** (Phases 0–3 of [PLAN.md](PLAN.md) done: converter,
+diagnostics, menu bar app). History, the full inspector and signed releases
+come next.
 
 This is a native Swift port of [fmscript2xml](../fmscript2xml), the Python
 converter and CLI.
+
+## Building
+
+Requires macOS 14+, Xcode 16+ and [XcodeGen](https://github.com/yonaskolb/XcodeGen)
+(`brew install xcodegen`).
+
+```sh
+swift test                      # converter tests (public fixtures)
+tools/build-app.sh Debug --open # build and run the menu bar app
+swift run fmscript2xml script.txt --print --diagnostics   # CLI
+```
 
 ## Development
 

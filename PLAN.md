@@ -9,7 +9,7 @@ Services shortcut) with a single signed app, and adds a snippet history and a
 visual inspector for debugging conversions.
 
 - Reference implementation: `~/dev/EMBO/fmscript2xml` (Python, v0.5.3)
-- Status: planning
+- Status: Phases 0–3 implemented; FileMaker paste checks and daily-use trial pending (see §13)
 - Last updated: 2026-10-07
 
 ---
@@ -289,15 +289,19 @@ notification.
 Goal: retire the risky assumptions before writing the port.
 
 - [ ] Swift script writes XMSS XML to the pasteboard; paste into FileMaker Pro
-      22, 26 and DEV Script Workspace.
+      22, 26 and DEV Script Workspace. *Tool ready (`swift run spike-paste`,
+      tools/spike/); paste check pending Alejandro.*
 - [ ] **Text alongside XMSS?** Write both XMSS and `public.utf8-plain-text`;
       check FileMaker still pastes steps (not text) in the Script Workspace.
       If so, keep the text flavor so pasting elsewhere still gives text.
-- [ ] Minimal `MenuBarExtra` app with a KeyboardShortcuts hotkey; confirm it
-      fires while FileMaker is frontmost and needs no Accessibility permission.
-- [ ] Capture the frontmost app at hotkey time.
+      *`spike-paste --with-text` ready; check pending Alejandro. Until then the
+      app writes XMSS only.*
+- [x] Minimal `MenuBarExtra` app with a KeyboardShortcuts hotkey (built as
+      the Phase 3 app). *Firing while FileMaker is frontmost: pending
+      Alejandro (Automator shortcut must be off first).*
+- [x] Capture the frontmost app at hotkey time.
 - [ ] Check the XMSC (whole scripts) and XMFN (custom functions) flavors work
-      the same way, for later.
+      the same way, for later. *Sample files in tools/spike/; pending Alejandro.*
 
 Exit: written findings appended to §13 (Decisions log).
 
@@ -306,22 +310,22 @@ Exit: written findings appended to §13 (Decisions log).
 Port order follows the dependency chain. Each module lands with its unit tests
 ported from Python.
 
-1. [ ] Package skeleton, bundled `steps.json`, `StepRegistry`.
-2. [ ] `CalcScanner`: string literals, `//` and `/* */` calc comments, bracket
+1. [x] Package skeleton, bundled `steps.json`, `StepRegistry`.
+2. [x] `CalcScanner`: string literals, `//` and `/* */` calc comments, bracket
        balance (see Python commits 22f6f5f, 1766569).
-3. [ ] Line joiner for multi-line steps (preserve line breaks inside calcs).
-4. [ ] `Parser` → `[ParsedStep]` **with source line ranges** (D8): name,
+3. [x] Line joiner for multi-line steps (preserve line breaks inside calcs).
+4. [x] `Parser` → `[ParsedStep]` **with source line ranges** (D8): name,
        params (positional + named), disabled (`//`), comments (`#`).
-5. [ ] `XMLBuilder`: `fmxmlsnippet` wrapper, CDATA for calculations, ID-policy
+5. [x] `XMLBuilder`: `fmxmlsnippet` wrapper, CDATA for calculations, ID-policy
        helper comments.
-6. [ ] Handlers, by group: comment, variable, control (If/Else If/Else/End If,
+6. [x] Handlers, by group: comment, variable, control (If/Else If/Else/End If,
        Exit Script, Pause/Resume), window, layout, field, script, find,
        dialog (Show Custom Dialog buttons), communication, misc, generic
        fallback.
-7. [ ] `Converter.convert` → `ConversionResult` with `StepTrace`s.
-8. [ ] Swift CLI `fmscript2xml` with the same flags as the Python CLI.
-9. [ ] Conformance runner + semantic comparator; differential script.
-10. [ ] Scrubbed public fixtures, pre-commit hook and CI check (§9).
+7. [x] `Converter.convert` → `ConversionResult` with `StepTrace`s.
+8. [x] Swift CLI `fmscript2xml` with the same flags as the Python CLI.
+9. [x] Conformance runner + semantic comparator; differential script.
+10. [x] Scrubbed public fixtures, pre-commit hook and CI check (§9).
 
 Exit: all public fixtures pass in CI; all 885 private fixtures pass locally;
 ported unit tests pass; differential run against Python shows no semantic
@@ -329,23 +333,23 @@ differences.
 
 ### Phase 2 — Diagnostics, source map, suggestions
 
-- [ ] `Diagnostic` codes emitted by the parser and handlers (unknown step,
+- [x] `Diagnostic` codes emitted by the parser and handlers (unknown step,
       unbalanced brackets, unknown parameter, ID left blank, empty input).
-- [ ] `StepTrace.xmlSteps` and `xmlTextRange` filled in by the generator,
+- [x] `StepTrace.xmlSteps` and `xmlTextRange` filled in by the generator,
       including 1→many for ID-policy helper comments.
-- [ ] `StepNameSuggester` (§7) with tests on real typos.
+- [x] `StepNameSuggester` (§7) with tests on real typos.
 
 Exit: every fixture produces a complete, consistent source map (test asserts
 every emitted `<Step>` maps back to exactly one input range).
 
 ### Phase 3 — App MVP (replaces Automator)
 
-- [ ] Xcode app target, `MenuBarExtra`, `LSUIElement`.
-- [ ] Hotkey → pipeline (§4) → XMSS on clipboard.
-- [ ] HUD + sound + failure notification with "Open inspector".
-- [ ] Settings: shortcut, on-errors policy, feedback, launch at login,
+- [x] Xcode app target, `MenuBarExtra`, `LSUIElement`.
+- [x] Hotkey → pipeline (§4) → XMSS on clipboard.
+- [x] HUD + sound + failure notification with "Open inspector".
+- [x] Settings: shortcut, on-errors policy, feedback, launch at login,
       FileMaker detection.
-- [ ] First-run window: explains the shortcut and offers launch at login.
+- [x] First-run window: explains the shortcut and offers launch at login.
 
 Exit: daily use replaces the Automator Quick Action.
 
@@ -441,6 +445,59 @@ Exit: daily use replaces the Automator Quick Action.
 - App name FM Script Paste (D15); tooling defaults (D17, D18).
 - Implementation runs through Phase 3, pushing directly to `main` of a public
   repo (§14).
+
+**Findings and implementation notes (2026-10-07, Phases 0–3)**
+
+- *Pasteboard:* `NSPasteboardItem` rejects `CorePasteboardFlavorType
+  0x584D5353` ("not a valid UTI"); `NSPasteboard.declareTypes`/`setData`
+  accept it and map it to `dyn.ah62d4rv4gk8zuxnxnq`. `FMClipboard` writes
+  that way. Reading back gives the bytes unchanged.
+- *Installed FileMaker:* Pro 22.0.6, 26.0.2 and DEV (22.0.6), all with bundle
+  ID `com.filemaker.client.pro12`. Settings lists them (informational).
+- *Parity:* the Swift output is byte-identical to Python's on all 884 private
+  fixtures (the 885th entry is a README) and 32 public ones, in strict and
+  continue-on-error mode (`tools/diff-against-python.sh`). The Swift
+  conformance suite also passes them semantically against FileMaker's exports.
+- *Python behaviour kept for parity* (worth revisiting after the freeze):
+  - Input uses universal newlines (`\r\n`, `\r` → `\n`), as Python's file
+    reading and `pbpaste` do.
+  - HTML entities are unescaped on the first line of each step only.
+  - Unknown steps are skipped silently in continue-on-error mode (no
+    `<!-- ERROR -->`); only handler failures get one. The one handler that
+    can fail is Perform Script on Server with Callback without a script name.
+  - Invalid element names from generic labels (e.g. `Action (custom):`) or
+    `]]>` inside a calculation make Python fall back to compact,
+    unindented XML without a declaration. Reproduced.
+  - Show Custom Dialog ignores the `//` disabled prefix.
+  - `Go to Layout [ Layoutname: $x ]` emits an empty layout calculation (8
+    real scripts); the new unknown-parameter warning flags it with a fix.
+- *Diagnostic severities:* error = unknown step, handler failure, empty input;
+  warning = unknown parameter, unbalanced brackets (the step swallows the
+  following lines, as in Python), skipped line; info = ID left blank (helper
+  comment), truncated line, duplicate label. Valid FileMaker labels the
+  converter ignores (`Collapsed`, New Window options, `File` on Perform
+  Script, `Specify target field`) don't warn; tuned on the private corpus,
+  which then shows no false "did you mean" step suggestions.
+- *Deviations from the plan's sketches:*
+  - `StepTrace.xmlTextRange` is stored as UTF-8 offsets (`xmlUTF8Range`, so
+    traces stay `Codable`); `ConversionResult.xmlTextRange(for:)` returns the
+    `Range<String.Index>`.
+  - `ConversionResult` also has `previewXML` (the continue-on-error output,
+    always present) next to `xml` (nil on strict failure), for the inspector
+    and "copy what converted".
+  - Empty input is an error in the app; the CLI keeps Python's behaviour
+    (empty snippet). The Swift CLI adds `--print`, `--diagnostics` and
+    `--explain`; its `-c` accepts leading `<!-- ERROR -->` comments.
+  - The Phase 3 "Open inspector" target is a read-only *Last Conversion*
+    window (input with marked lines, XML with the selected step highlighted,
+    diagnostics). Phase 5 replaces it with the real inspector.
+  - Welcome and inspector windows are AppKit-managed (`WindowManager`): a
+    menu-style `MenuBarExtra` has no persistent scene to call `openWindow`
+    from (hotkeys, notification actions).
+  - Debug builds accept `-FMSPPasteboardName <name>` (use a named pasteboard)
+    and a distributed notification to trigger a conversion, so the pipeline
+    can be exercised without touching the real clipboard.
+  - Converter version is 0.6.0 (Python is 0.5.3).
 
 ---
 
