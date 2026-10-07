@@ -1,0 +1,14 @@
+New Window [ Style: Document ; Name: "Report" ; Height: 600 ; Width: 800 ; Top: 20 ; Left: 40 ]
+New Window [ Style: Floating Document ; Name: $windowName ]
+New Window [ Style: Dialog ; Using layout: “Invoice Detail” ; Height: 400 ]
+New Window [ Style: Card ; Name: "Picker" ; Close: Yes ]
+Close Window [ Current Window ]
+Close Window [ Name: "Report" ; Current file ]
+Close Window [ $windowName ]
+Enter Preview Mode [ Pause: On ]
+Enter Preview Mode [ Pause: Off ]
+Enter Preview Mode
+Adjust Window [ Resize to Fit ]
+Freeze Window
+Refresh Window [ Flush cached join results ]
+Move/Resize Window [ Current Window ; Height: 500 ; Width: 700 ]

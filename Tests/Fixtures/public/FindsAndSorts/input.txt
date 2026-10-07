@@ -1,0 +1,14 @@
+Perform Find [ ]
+Perform Find [ Restore ]
+Perform Find [ Restore: False ]
+Perform Find [ Table: Customers ; Restore ]
+Enter Find Mode [ Pause: Off ]
+Set Field [ Customers::City ; "Heidelberg" ]
+Constrain Found Set [ Restore ]
+Show All Records
+Sort Records [ Restore ; With dialog: Off ]
+Sort Records by Field [ Descending ; Invoices::Date ]
+Sort Records by Field [ Ascending ; Invoices::Lines[2] ]
+Sort Records by Field [ Nonsense ]
+Unsort Records
+Omit Record

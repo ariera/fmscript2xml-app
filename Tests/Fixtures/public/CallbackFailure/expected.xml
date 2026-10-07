@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <!-- ERROR: Error converting step 'Perform Script on Server with Callback': 'NoneType' object has no attribute 'strip' -->
+  <Step enable="True" id="93" name="Beep"/>
+  <Step enable="True" id="210" name="Perform Script on Server with Callback">
+    <Calculated>
+      <Calculation><![CDATA[$job]]></Calculation>
+    </Calculated>
+    <CallbackScriptState value="Resume"/>
+    <CallbackScript>
+      <Calculated>
+        <Calculation><![CDATA[$done]]></Calculation>
+      </Calculated>
+    </CallbackScript>
+  </Step>
+</fmxmlsnippet>

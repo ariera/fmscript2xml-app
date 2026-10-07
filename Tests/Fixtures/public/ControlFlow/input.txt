@@ -1,0 +1,19 @@
+If [ Get ( FoundCount ) = 0 ]
+	Exit Script [ Text Result: "none" ]
+Else If [ Get ( FoundCount ) = 1 ]
+	Exit Script [ Text Result: $result ]
+Else If [ $a > 1 and $b < 2 // compare [x] ]
+	Exit Script [ $positional ]
+Else
+	Exit Script [ ]
+End If
+If [ ]
+End If
+Loop
+	Exit Loop If [ $i ≥ 10 ]
+	Set Variable [ $i ; Value: $i + 1 ]
+End Loop
+Pause/Resume Script [ Duration (seconds): .5 ]
+Pause/Resume Script [ Indefinitely ]
+Halt Script
+Exit Script [ Text Result: ]

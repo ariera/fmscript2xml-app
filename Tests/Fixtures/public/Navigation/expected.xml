@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ &quot;Invoices&quot; ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout name="Invoices"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ &quot;Invoice List&quot; ; Animation: Slide in from Right ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout name="Invoice List"/>
+    <Animation value="Slide in from Right"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ “Customers” ; Animation: None ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="LayoutNameByCalc"/>
+    <Layout>
+      <Calculation><![CDATA[“Customers”]]></Calculation>
+    </Layout>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ $returnLayout ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="LayoutNameByCalc"/>
+    <Layout>
+      <Calculation><![CDATA[$returnLayout]]></Calculation>
+    </Layout>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ original layout ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="LayoutNameByCalc"/>
+    <Layout>
+      <Calculation><![CDATA[original layout]]></Calculation>
+    </Layout>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ Layout: &quot;Settings&quot; ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout name="Settings"/>
+  </Step>
+  <Step enable="True" id="16" name="Go to Record/Request/Page">
+    <NoInteract state="False"/>
+    <RowPageLocation value="First"/>
+  </Step>
+  <Step enable="True" id="16" name="Go to Record/Request/Page">
+    <NoInteract state="False"/>
+    <Exit state="True"/>
+    <RowPageLocation value="Next"/>
+  </Step>
+  <Step enable="True" id="16" name="Go to Record/Request/Page">
+    <NoInteract state="False"/>
+    <RowPageLocation value="ByCalculation"/>
+    <Calculation><![CDATA[$recordNumber]]></Calculation>
+  </Step>
+  <Step enable="True" id="16" name="Go to Record/Request/Page">
+    <NoInteract state="True"/>
+    <RowPageLocation value="ByCalculation"/>
+    <Calculation><![CDATA[Get ( FoundCount )]]></Calculation>
+  </Step>
+  <Step enable="True" id="74" name="Go to Related Record">
+    <Option state="False"/>
+    <MatchAllRecords state="False"/>
+    <ShowInNewWindow state="False"/>
+    <Restore state="True"/>
+    <LayoutDestination value="LayoutNameByCalc"/>
+    <Name>
+      <Calculation><![CDATA[/*Show only related records*/]]></Calculation>
+    </Name>
+    <NewWndStyles Style="Document" Close="Yes" Minimize="Yes" Maximize="Yes" Resize="Yes"/>
+    <Table name="Order Lines"/>
+    <Layout>
+      <Calculation><![CDATA[“Order Lines”]]></Calculation>
+    </Layout>
+  </Step>
+  <Step enable="True" id="74" name="Go to Related Record">
+    <Option state="False"/>
+    <MatchAllRecords state="True"/>
+    <ShowInNewWindow state="False"/>
+    <Restore state="True"/>
+    <LayoutDestination value="LayoutNameByCalc"/>
+    <Name>
+      <Calculation><![CDATA[/*Show all*/]]></Calculation>
+    </Name>
+    <NewWndStyles Style="Document" Close="Yes" Minimize="Yes" Maximize="Yes" Resize="Yes"/>
+    <Table name="Customers"/>
+    <Layout>
+      <Calculation><![CDATA[$layout]]></Calculation>
+    </Layout>
+  </Step>
+  <Step enable="True" id="74" name="Go to Related Record">
+    <Option state="False"/>
+    <MatchAllRecords state="False"/>
+    <ShowInNewWindow state="True"/>
+    <Restore state="True"/>
+    <LayoutDestination value="LayoutNameByCalc"/>
+    <Name>
+      <Calculation><![CDATA[/*Show in new window*/]]></Calculation>
+    </Name>
+    <NewWndStyles Style="Document" Close="Yes" Minimize="Yes" Maximize="Yes" Resize="Yes"/>
+    <Table name="Invoices"/>
+    <Layout>
+      <Calculation><![CDATA[<Current Layout>]]></Calculation>
+    </Layout>
+  </Step>
+  <Step enable="True" id="17" name="Go to Field">
+    <Calculation><![CDATA[Customers::Name]]></Calculation>
+  </Step>
+  <Step enable="True" id="145" name="Go to Object">
+    <ObjectName>&quot;tabPanel&quot;</ObjectName>
+  </Step>
+  <Step enable="True" id="99" name="Go to Portal Row">
+    <Calculation><![CDATA[Select]]></Calculation>
+    <Calculation><![CDATA[First]]></Calculation>
+  </Step>
+</fmxmlsnippet>

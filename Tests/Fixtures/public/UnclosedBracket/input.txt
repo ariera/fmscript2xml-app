@@ -1,0 +1,3 @@
+Set Variable [ $open ; Value: Let ( [ a = 1 ; a )
+Beep
+Set Variable [ $swallowed ; Value: 2 ]

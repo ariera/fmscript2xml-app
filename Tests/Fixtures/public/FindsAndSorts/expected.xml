@@ -1,0 +1,68 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Find [ ]</Text>
+  </Step>
+  <Step enable="True" id="28" name="Perform Find"/>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Find [ Restore ]</Text>
+  </Step>
+  <Step enable="True" id="28" name="Perform Find">
+    <Restore state="True"/>
+    <Query table="">
+      <RequestRow operation="Include"/>
+    </Query>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Find [ Restore: False ]</Text>
+  </Step>
+  <Step enable="True" id="28" name="Perform Find">
+    <Restore state="False"/>
+    <Query table="">
+      <RequestRow operation="Include"/>
+    </Query>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Find [ Table: Customers ; Restore ]</Text>
+  </Step>
+  <Step enable="True" id="28" name="Perform Find">
+    <Restore state="True"/>
+    <Query table="Customers">
+      <RequestRow operation="Include"/>
+    </Query>
+  </Step>
+  <Step enable="True" id="22" name="Enter Find Mode">
+    <Pause>Off</Pause>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA["Heidelberg"]]></Calculation>
+    <Field name="City" table="Customers"/>
+  </Step>
+  <Step enable="True" id="126" name="Constrain Found Set">
+    <Calculation><![CDATA[Restore]]></Calculation>
+  </Step>
+  <Step enable="True" id="23" name="Show All Records"/>
+  <Step enable="True" id="39" name="Sort Records">
+    <Calculation><![CDATA[Restore]]></Calculation>
+    <Withdialog>Off</Withdialog>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Sort Records by Field [ Descending ; Invoices::Date ]</Text>
+  </Step>
+  <Step enable="True" id="154" name="Sort Records by Field">
+    <SortRecordsByField value="SortDescending"/>
+    <Field name="Date" table="Invoices"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Sort Records by Field [ Ascending ; Invoices::Lines[2] ]</Text>
+  </Step>
+  <Step enable="True" id="154" name="Sort Records by Field">
+    <SortRecordsByField value="SortAscending"/>
+    <Field name="Lines" table="Invoices" repetition="2"/>
+  </Step>
+  <Step enable="True" id="154" name="Sort Records by Field">
+    <SortRecordsByField value="SortAscending"/>
+  </Step>
+  <Step enable="True" id="21" name="Unsort Records"/>
+  <Step enable="True" id="25" name="Omit Record"/>
+</fmxmlsnippet>

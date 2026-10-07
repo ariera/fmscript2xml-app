@@ -1,0 +1,2 @@
+Set Variable [ $xml ; Value: "<![CDATA[x]]>" ]
+Beep

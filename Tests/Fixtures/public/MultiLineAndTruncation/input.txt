@@ -1,0 +1,16 @@
+Set Variable [ $long ; Value: Let ( [
+	a = 1 ;
+	b = "[not a bracket" ;
+	c = "]" ] ;
+	a & b & c
+) ]
+Set Variable [ $comment ; Value: /* a [ block
+	comment ; with: syntax */ 1 ]
+Set Variable [ $truncated ; Value: "this line was cut off…
+Beep
+If [ Let ( [ x = 1 ; y = 2 ] ; x + y…
+End If
+Set Variable [ $cut ; Value: Case (
+	$a = 1 ; "one" ;
+	$a = 2 ; "two…
+Beep

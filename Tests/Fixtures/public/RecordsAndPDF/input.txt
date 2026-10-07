@@ -1,0 +1,9 @@
+New Record/Request
+Commit Records/Requests [ With dialog: Off ]
+Commit Records/Requests [ Skip data entry validation ; With dialog: On ]
+Commit Records/Requests [ No dialog ; Force Commit ]
+Revert Record/Request [ With dialog: Off ]
+Delete Record/Request [ With dialog: Off ]
+Save Records as PDF [ With dialog: Off ; “$filepath” ; Current record ; Create folders: On ]
+Save Records as PDF [ Restore ; No dialog ; "$filepath" ; Blank record, with placeholder text ; Create folders: Off ]
+Save Records as PDF [ Append ; With dialog: On ; Records being browsed ]

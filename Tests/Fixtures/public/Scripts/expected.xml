@@ -1,0 +1,70 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Script [ Specified: From list ; “Utility_Log” ; Parameter: &quot;start&quot; ]</Text>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculation><![CDATA["start"]]></Calculation>
+    <DisplayCalculation>
+      <Calculation><![CDATA["start"]]></Calculation>
+    </DisplayCalculation>
+    <Script name="“Utility_Log”" id="1"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Script [ Specified: From list ; “Utility_NoParam” ]</Text>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Script name="“Utility_NoParam”" id="1"/>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculation><![CDATA[$param]]></Calculation>
+    <DisplayCalculation>
+      <Calculation><![CDATA[$param]]></Calculation>
+    </DisplayCalculation>
+    <Script name="$scriptName" id="1"/>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Script name="Utility_Quoted" id="1"/>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculated>
+      <Calculation/>
+    </Calculated>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Script on Server [ Specified: From list ; “Server_Task” ; Parameter: &quot;x&quot; ; Wait for completion: On ]</Text>
+  </Step>
+  <Step enable="True" id="164" name="Perform Script on Server">
+    <WaitForCompletion state="True"/>
+    <Calculation><![CDATA["x"]]></Calculation>
+    <Script name="Server_Task"/>
+  </Step>
+  <Step enable="True" id="164" name="Perform Script on Server">
+    <WaitForCompletion state="False"/>
+    <Calculated>
+      <Calculation><![CDATA["Server_" & $task]]></Calculation>
+    </Calculated>
+  </Step>
+  <Step enable="True" id="164" name="Perform Script on Server">
+    <WaitForCompletion state="False"/>
+    <Calculated>
+      <Calculation><![CDATA[$serverScript]]></Calculation>
+    </Calculated>
+  </Step>
+  <Step enable="True" id="148" name="Install OnTimer Script">
+    <Script name="“Utility_Tick”"/>
+    <Interval>
+      <Calculation><![CDATA[5]]></Calculation>
+    </Interval>
+  </Step>
+  <Step enable="True" id="148" name="Install OnTimer Script"/>
+  <Step enable="True" id="86" name="Set Error Capture">
+    <Set state="True"/>
+  </Step>
+  <Step enable="True" id="86" name="Set Error Capture">
+    <Set state="False"/>
+  </Step>
+  <Step enable="True" id="85" name="Allow User Abort">
+    <Calculation><![CDATA[Off]]></Calculation>
+  </Step>
+</fmxmlsnippet>

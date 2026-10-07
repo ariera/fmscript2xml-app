@@ -1,0 +1,6 @@
+Sort Records by Field [ Descending ]
+Sort Records by Field [ Ascending ]
+Sort Records by Field [ Associated value list ]
+Sort Records by Field [ Descending ; Settings::CurrentUserID_g ]
+Sort Records by Field [ Ascending ; Settings::CurrentUserID_g ]
+Sort Records by Field [ Associated value list ; Settings::CurrentUserID_g ]

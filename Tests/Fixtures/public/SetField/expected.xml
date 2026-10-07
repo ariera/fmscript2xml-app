@@ -1,0 +1,14 @@
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation>
+      <![CDATA[100]]>
+    </Calculation>
+    <Field table="Orders" name="Total"></Field>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation>
+      <![CDATA[$comments]]>
+    </Calculation>
+    <Field table="Orders" repetition="2" name="Note"></Field>
+  </Step>
+</fmxmlsnippet>

@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="89" name="Comment">
+    <Text> Top-level comment</Text>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text> Indented comment keeps its indentation</Text>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>No space after hash</Text>
+  </Step>
+  <Step enable="False" id="141" name="Set Variable">
+    <Name>$disabled</Name>
+    <Value>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+  </Step>
+  <Step enable="True" id="93" name="Beep"/>
+  <Step enable="False" id="103" name="Exit Script">
+    <Calculation><![CDATA[0]]></Calculation>
+  </Step>
+</fmxmlsnippet>

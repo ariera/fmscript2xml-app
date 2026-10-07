@@ -1,0 +1,7 @@
+Set Variable [ $ok ; Value: 1 ]
+Go to Layuot [ "Invoices" ]
+set variable [ $lower ; Value: 2 ]
+Commit Records
+Beep
+Perform JavaScript in Web Viewer [ Object Name: "wv" ; Function Name: "f" ]
+Exit Script [ Text Result: $ok ]

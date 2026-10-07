@@ -1,0 +1,2 @@
+Set Field [ Orders::Total ; 100 ]
+Set Field [ Orders::Note[2] ; $comments ]

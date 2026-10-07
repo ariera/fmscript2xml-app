@@ -1,0 +1,17 @@
+Set Variable [ $count ; Value: 0 ]
+Set Variable [ $$globalCount ; Value: $$globalCount + 1 ]
+Set Variable [ $empty ; Value: "" ]
+Set Variable [ $noValue ]
+Set Variable [ $list[2] ; Value: "second" ]
+Set Variable [ $rep ; Value: "x" ; Repetition: 3 ]
+Set Variable [ Name: $named ; Value: Get ( CurrentDate ) ]
+Set Variable [ total ; Value: 1 ]
+Set Variable [ $json ; Value: JSONSetElement ( "{}" ;
+	[ "name" ; Customers::Name ; JSONString ] ;
+	[ "total" ; Invoices::Total ; JSONNumber ]
+) ]
+Set Variable [ $sql ; Value: "SELECT id
+	FROM Orders
+	WHERE status = ?" ]
+Set Variable [ $html ; Value: "&lt;b&gt;bold&lt;/b&gt; &amp; more" ]
+Set Variable [ $amp ; Value: "Tom &Jerry" ]

@@ -1,0 +1,4 @@
+# Windows line endings
+Set Variable [ $crlf ; Value: "a" ]
+# Second comment
+Beep

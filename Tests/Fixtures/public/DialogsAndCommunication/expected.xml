@@ -1,0 +1,150 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="87" name="Show Custom Dialog">
+    <Title>
+      <Calculation><![CDATA["Title"]]></Calculation>
+    </Title>
+    <Message>
+      <Calculation><![CDATA["Message"]]></Calculation>
+    </Message>
+    <Buttons>
+      <Button CommitState="True">
+        <Calculation><![CDATA["OK"]]></Calculation>
+      </Button>
+      <Button CommitState="False">
+        <Calculation><![CDATA["Cancel"]]></Calculation>
+      </Button>
+      <Button CommitState="False"/>
+    </Buttons>
+  </Step>
+  <Step enable="True" id="87" name="Show Custom Dialog">
+    <Title>
+      <Calculation><![CDATA["Delete?"]]></Calculation>
+    </Title>
+    <Message>
+      <Calculation><![CDATA["Delete " & Customers::Name & "?"]]></Calculation>
+    </Message>
+    <Buttons>
+      <Button CommitState="True">
+        <Calculation><![CDATA["Delete"]]></Calculation>
+      </Button>
+      <Button CommitState="False">
+        <Calculation><![CDATA["Cancel"]]></Calculation>
+      </Button>
+      <Button CommitState="False">
+        <Calculation><![CDATA["Later"]]></Calculation>
+      </Button>
+    </Buttons>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Show Custom Dialog [ &quot;Input&quot; ; &quot;Enter values&quot; ; InputFields: Customers::Name, Customers::City ]</Text>
+  </Step>
+  <Step enable="True" id="87" name="Show Custom Dialog">
+    <Title>
+      <Calculation><![CDATA["Input"]]></Calculation>
+    </Title>
+    <Message>
+      <Calculation><![CDATA["Enter values"]]></Calculation>
+    </Message>
+    <Buttons>
+      <Button CommitState="True">
+        <Calculation><![CDATA["OK"]]></Calculation>
+      </Button>
+      <Button CommitState="False">
+        <Calculation><![CDATA["Cancel"]]></Calculation>
+      </Button>
+      <Button CommitState="False"/>
+    </Buttons>
+    <InputFields>
+      <InputField>
+        <Field name="Customers::Name"/>
+      </InputField>
+      <InputField>
+        <Field name="Customers::City"/>
+      </InputField>
+    </InputFields>
+  </Step>
+  <Step enable="True" id="87" name="Show Custom Dialog">
+    <Title>
+      <Calculation><![CDATA["Disabled"]]></Calculation>
+    </Title>
+    <Message>
+      <Calculation><![CDATA["Still enabled in XML"]]></Calculation>
+    </Message>
+    <Buttons>
+      <Button CommitState="True">
+        <Calculation><![CDATA["OK"]]></Calculation>
+      </Button>
+      <Button CommitState="False">
+        <Calculation><![CDATA["Cancel"]]></Calculation>
+      </Button>
+      <Button CommitState="False"/>
+    </Buttons>
+  </Step>
+  <Step enable="True" id="111" name="Open URL">
+    <NoInteract state="True"/>
+    <Calculation><![CDATA["https://example.com/?q=" & GetAsURLEncoded ( $q )]]></Calculation>
+  </Step>
+  <Step enable="True" id="111" name="Open URL">
+    <NoInteract state="False"/>
+    <Calculation><![CDATA["mailto:someone@example.com"]]></Calculation>
+  </Step>
+  <Step enable="True" id="63" name="Send Mail">
+    <NoInteract state="True"/>
+    <To UseFoundSet="False">
+      <Calculation><![CDATA["a@example.com"]]></Calculation>
+    </To>
+    <Cc UseFoundSet="False">
+      <Calculation><![CDATA[$cc]]></Calculation>
+    </Cc>
+    <Bcc UseFoundSet="False">
+      <Calculation><![CDATA["b@example.com"]]></Calculation>
+    </Bcc>
+    <Subject>
+      <Calculation><![CDATA["Hello"]]></Calculation>
+    </Subject>
+    <Message>
+      <Calculation><![CDATA["Body"]]></Calculation>
+    </Message>
+    <MultipleEmails state="False"/>
+    <SendViaSMTP state="True"/>
+    <SMTPEncryptionType type="SMTPEncryptionNone"/>
+    <SMTPAuthenticationType type="SMTPAuthenticationNone"/>
+  </Step>
+  <Step enable="True" id="63" name="Send Mail">
+    <NoInteract state="False"/>
+    <To UseFoundSet="False">
+      <Calculation><![CDATA[Customers::Email]]></Calculation>
+    </To>
+    <Cc UseFoundSet="False">
+      <Calculation><![CDATA["c@example.com"]]></Calculation>
+    </Cc>
+    <Bcc UseFoundSet="False">
+      <Calculation><![CDATA[$bcc]]></Calculation>
+    </Bcc>
+    <MultipleEmails state="False"/>
+    <SendViaSMTP state="False"/>
+    <SMTPEncryptionType type="SMTPEncryptionNone"/>
+    <SMTPAuthenticationType type="SMTPAuthenticationNone"/>
+  </Step>
+  <Step enable="True" id="160" name="Insert from URL">
+    <Calculation><![CDATA[Select]]></Calculation>
+    <Withdialog>Off</Withdialog>
+    <Target>$response</Target>
+    <Calculation><![CDATA["https://api.example.com"]]></Calculation>
+    <Calculation><![CDATA[Verify SSL Certificates]]></Calculation>
+    <cURLoptions>&quot;--request GET&quot;</cURLoptions>
+  </Step>
+  <Step enable="True" id="43" name="Print">
+    <NoInteract state="True"/>
+    <Restore state="True"/>
+  </Step>
+  <Step enable="True" id="43" name="Print">
+    <NoInteract state="False"/>
+    <Restore state="False"/>
+  </Step>
+  <Step enable="True" id="42" name="Print Setup">
+    <NoInteract state="True"/>
+    <Restore state="False"/>
+  </Step>
+</fmxmlsnippet>

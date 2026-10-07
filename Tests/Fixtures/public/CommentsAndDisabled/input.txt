@@ -1,0 +1,10 @@
+# Top-level comment
+	# Indented comment keeps its indentation
+#
+#No space after hash
+// Set Variable [ $disabled ; Value: 1 ]
+// # disabled comment
+//
+Beep
+
+// Exit Script [ Text Result: 0 ]

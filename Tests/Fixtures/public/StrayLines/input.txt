@@ -1,0 +1,7 @@
+Set Variable [ $x ; Value: 1 ]
+]
+) ]
+	123 + 456
+Beep
+[ no step name ]
+Set Variable [ $y ; Value: 2 ]
