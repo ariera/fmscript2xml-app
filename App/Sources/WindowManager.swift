@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import AppKit
+import FMScriptKit
 import SwiftUI
 
 /// AppKit-managed windows. A menu bar app has no always-present SwiftUI
@@ -36,17 +37,13 @@ final class WindowManager {
         present(window)
     }
 
-    /// The inspector observes AppModel, so it updates by itself; this only
-    /// exists so callers don't need to know that.
-    func refreshInspector() {}
-
     func showAbout() {
         NSApp.activate()
         NSApp.orderFrontStandardAboutPanel(options: [
             .applicationName: Branding.appName,
             .credits: NSAttributedString(
                 string: "\(Branding.copyright)\nLicensed under \(Branding.license).\n"
-                    + "Converter \(FMScriptKitVersion.string)\n\(Branding.repositoryURL.absoluteString)",
+                    + "Converter \(FMScriptKit.version)\n\(Branding.repositoryURL.absoluteString)",
                 attributes: [.font: NSFont.systemFont(ofSize: 11), .foregroundColor: NSColor.secondaryLabelColor]
             ),
         ])
@@ -71,10 +68,4 @@ final class WindowManager {
         NSApp.activate()
         window.makeKeyAndOrderFront(nil)
     }
-}
-
-import FMScriptKit
-
-enum FMScriptKitVersion {
-    static var string: String { FMScriptKit.version }
 }

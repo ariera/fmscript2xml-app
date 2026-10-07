@@ -95,7 +95,6 @@ final class AppModel {
             Feedback.shared.show(.failure("Not converted — clipboard unchanged"))
             Notifications.shared.postFailure(summary: summary, errorCount: result.errors.count)
         }
-        WindowManager.shared.refreshInspector()
         #if DEBUG
         debugLog("status=\(result.status.rawValue) steps=\(result.convertedStepCount) "
             + "diagnostics=\(result.diagnostics.map { "\($0.severity.rawValue):\($0.code.rawValue)@\($0.lines.lowerBound)" }) "

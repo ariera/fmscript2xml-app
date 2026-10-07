@@ -24,7 +24,6 @@ struct FMScriptPasteApp: App {
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let model = AppModel.shared
         KeyboardShortcuts.onKeyUp(for: .convertClipboard) {
             Task { @MainActor in AppModel.shared.convertClipboard() }
         }
@@ -43,7 +42,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Task { @MainActor in AppModel.shared.convertClipboard() }
         }
         #endif
-        _ = model
     }
 }
 
