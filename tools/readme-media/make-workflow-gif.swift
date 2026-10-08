@@ -33,7 +33,7 @@ let titleBar: CGFloat = 30
 let editorFont = NSFont(name: "Menlo", size: 11) ?? .monospacedSystemFont(ofSize: 11, weight: .regular)
 let lineHeight: CGFloat = 19
 let textOrigin = CGPoint(x: left.minX + 18, y: left.minY + titleBar + 18)
-let stepsOrigin = CGPoint(x: right.minX + 46, y: right.minY + titleBar + 46)
+let stepsOrigin = CGPoint(x: right.minX + 46, y: right.minY + titleBar + 18)
 
 func color(_ hex: UInt32, _ alpha: CGFloat = 1) -> NSColor {
     NSColor(srgbRed: CGFloat((hex >> 16) & 0xFF) / 255, green: CGFloat((hex >> 8) & 0xFF) / 255,
@@ -255,7 +255,7 @@ func state(at t: Double) -> State {
     // 2.8–3.8: ⌘C
     if t >= 2.8 && t < 3.9 { s.keys = (["⌘", "C"], "Copy", fade(t, from: 2.8, to: 3.9)) }
     // 4.1–5.2: ⌃⌥⌘F, the menu bar icon reacts, then the HUD
-    if t >= 4.1 && t < 5.3 { s.keys = (["⌃", "⌥", "⌘", "F"], "Convert with FM Script Paste", fade(t, from: 4.1, to: 5.3)) }
+    if t >= 4.1 && t < 5.3 { s.keys = (["⌃", "⌥", "⌘", "F"], "Convert with fmscript2xml", fade(t, from: 4.1, to: 5.3)) }
     s.iconHighlighted = t >= 4.4 && t < 4.9
     s.hudAlpha = fade(t, from: 4.6, to: 6.6, ramp: 0.2)
     // 5.6–6.4: move to the Script Workspace and click
@@ -318,11 +318,8 @@ func render(_ s: State) -> CGImage {
 
     // Script Workspace (right)
     window(right, title: "FileMaker Pro — Script Workspace", active: s.rightActive)
-    let tab = CGRect(x: right.minX + 12, y: right.minY + titleBar + 8, width: 120, height: 24)
-    roundedRect(tab, 6, fill: color(0xE6EEF9), stroke: color(0xC5D4EA))
-    text("Update Totals", at: CGPoint(x: tab.minX + 12, y: tab.minY + 4), font: .systemFont(ofSize: 12, weight: .medium), color: color(0x1D3B66))
     let stepFont = editorFont
-    let gutter = CGRect(x: right.minX + 1, y: stepsOrigin.y - 6, width: 32, height: right.maxY - stepsOrigin.y)
+    let gutter = CGRect(x: right.minX + 1, y: right.minY + titleBar, width: 32, height: right.height - titleBar - 1)
     color(0xF6F7F9).setFill()
     gutter.fill()
     if s.pasted {

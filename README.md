@@ -1,13 +1,13 @@
-<img src="docs/logo.png" width="128" alt="FM Script Paste logo" align="right">
+<img src="docs/logo.png" width="128" alt="fmscript2xml logo" align="right">
 
-# FM Script Paste
+# fmscript2xml
 
 FileMaker can't paste script steps written as text. A step you see in an
 editor, a code review, documentation or an AI assistant has to be retyped by
 hand in the Script Workspace, line by line. For experienced developers this
 is slow, error-prone and frustrating work.
 
-FM Script Paste removes that work. Copy the steps as text, press **⌃⌥⌘F**,
+fmscript2xml removes that work. Copy the steps as text, press **⌃⌥⌘F**,
 and paste them into FileMaker as real script steps. The conversion takes a
 fraction of a second.
 
@@ -18,16 +18,16 @@ fraction of a second.
 Requires macOS 14 (Sonoma) or later. FileMaker Pro doesn't need to be
 installed for the conversion.
 
-FM Script Paste is in **beta** for all 0.x versions.
+fmscript2xml is in **beta** for all 0.x versions.
 
 1. Download the latest DMG from
    [Releases](https://github.com/ariera/fmscript2xml-app/releases).
-2. Drag **FM Script Paste** to Applications and open it.
+2. Drag **fmscript2xml** to Applications and open it.
 3. Beta builds aren't notarised by Apple yet, so macOS blocks the first
    launch. Click **Done**, open **System Settings → Privacy & Security**,
-   click **Open Anyway** next to "FM Script Paste was blocked", and confirm.
+   click **Open Anyway** next to "fmscript2xml was blocked", and confirm.
    You only do this once. (Or run
-   `xattr -dr com.apple.quarantine "/Applications/FM Script Paste.app"`.)
+   `xattr -dr com.apple.quarantine "/Applications/fmscript2xml.app"`.)
 4. The welcome window shows the shortcut and offers to launch the app at login.
    Allow notifications: failures are reported that way.
 
@@ -75,7 +75,7 @@ quitting, launch at login, show in Dock, and the installed FileMaker versions.
 
 <p>
   <img src="docs/images/settings.png" width="300" alt="Settings">
-  <img src="docs/images/about.png" width="300" alt="About FM Script Paste">
+  <img src="docs/images/about.png" width="300" alt="About fmscript2xml">
 </p>
 
 ## Troubleshooting
@@ -91,7 +91,7 @@ quitting, launch at login, show in Dock, and the installed FileMaker versions.
 - **The menu bar icon is missing.** On a crowded menu bar macOS hides some
   icons. Check System Settings → Menu Bar. You can also turn on "Show in
   Dock" in Settings.
-- **No failure notifications.** Allow notifications for FM Script Paste in
+- **No failure notifications.** Allow notifications for fmscript2xml in
   System Settings → Notifications.
 - **Paste automatically does nothing.** It needs Accessibility permission:
   System Settings → Privacy & Security → Accessibility.
