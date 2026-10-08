@@ -13,6 +13,9 @@ fraction of a second.
 
 ![Copy script steps as text, press ⌃⌥⌘F, paste them into FileMaker's Script Workspace as steps](docs/images/workflow.gif)
 
+**Website:** [ariera.github.io/fmscript2xml-app](https://ariera.github.io/fmscript2xml-app/) ·
+**Download:** [latest release](https://github.com/ariera/fmscript2xml-app/releases/latest)
+
 ## Install
 
 Requires macOS 14 (Sonoma) or later. FileMaker Pro doesn't need to be
