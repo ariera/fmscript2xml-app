@@ -560,6 +560,13 @@ Exit: daily use replaces the Automator Quick Action.
   applies once the certificate exists.
 - *About window* is a custom window sized to its text (the standard About
   panel's credits area scrolls).
+- *Inspector layout (2026-10-08, found while taking README screenshots):*
+  SwiftUI's `HSplitView`/`VSplitView` reported a minimum width (1,395 pt)
+  larger than the default window (1,180 pt), so the content overflowed and
+  was clipped; they are replaced by a small draggable split that remembers
+  its position. On current macOS the line-number ruler overlays the text
+  view's clip view, so the text is inset past it. "Open Inspector" selects
+  the latest conversion, not a pinned entry at the top of the list.
 - *Debug-only hooks* (not in Release builds): snapshot the inspector to a
   PNG, and run "fix"/"copy" in the inspector, from scripts. Used to verify
   layouts and flows without screen-recording permission.

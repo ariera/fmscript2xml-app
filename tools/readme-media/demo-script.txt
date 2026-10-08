@@ -1,0 +1,8 @@
+# Recalculate the invoice total
+Set Variable [ $total ; Value: 0 ]
+Go to Record/Request/Page [ First ]
+Loop
+	Set Variable [ $total ; Value: $total + Invoices::Amount ]
+	Go to Record/Request/Page [ Next ; Exit after last: On ]
+End Loop
+Set Field [ Invoices::Total ; $total ]

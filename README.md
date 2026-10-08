@@ -11,6 +11,8 @@ FM Script Paste removes that work. Copy the steps as text, press **⌃⌥⌘F**,
 and paste them into FileMaker as real script steps. The conversion takes a
 fraction of a second.
 
+![Copy script steps as text, press ⌃⌥⌘F, paste them into FileMaker's Script Workspace as steps](docs/images/workflow.gif)
+
 ## Install
 
 Requires macOS 14 (Sonoma) or later. FileMaker Pro doesn't need to be
@@ -64,10 +66,17 @@ tab shows what the parser read for each step. **Copy as Steps** copies an
 edited version and saves it as a new history entry. **New Draft** gives an
 empty playground.
 
+![The inspector: history with a pinned entry, the input with two problems marked, the XML, and Fix buttons](docs/images/inspector.png)
+
 **Settings.** Shortcuts (convert; open the inspector, off by default), what to do on errors (leave
 the clipboard unchanged, or copy what converted), HUD and sound, paste
 automatically after converting, history length and whether to keep it after
 quitting, launch at login, show in Dock, and the installed FileMaker versions.
+
+<p>
+  <img src="docs/images/settings.png" width="300" alt="Settings">
+  <img src="docs/images/about.png" width="300" alt="About FM Script Paste">
+</p>
 
 ## Troubleshooting
 
