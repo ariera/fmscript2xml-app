@@ -37,6 +37,23 @@ final class WindowManager {
         present(window)
     }
 
+    #if DEBUG
+    /// Opens the inspector, optionally resizes it, and writes its contents to a PNG.
+    func snapshotInspector(to url: URL, size: NSSize = NSSize(width: 1600, height: 900)) {
+        showInspector()
+        guard let window = inspector, let view = window.contentView else { return }
+        window.setContentSize(size)
+        view.layoutSubtreeIfNeeded()
+        Task {
+            try? await Task.sleep(for: .milliseconds(500))
+            guard let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
+            view.cacheDisplay(in: view.bounds, to: rep)
+            try? rep.representation(using: .png, properties: [:])?.write(to: url)
+            debugLog("inspector snapshot: \(url.path)")
+        }
+    }
+    #endif
+
     func showAbout() {
         NSApp.activate()
         NSApp.orderFrontStandardAboutPanel(options: [

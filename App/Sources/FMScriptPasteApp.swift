@@ -45,6 +45,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         ) { _ in
             Task { @MainActor in AppModel.shared.convertClipboard() }
         }
+        DistributedNotificationCenter.default().addObserver(
+            forName: Notification.Name("\(Branding.bundleIdentifier).debug.snapshotInspector"), object: nil, queue: .main
+        ) { note in
+            let path = note.object as? String ?? NSTemporaryDirectory() + "inspector.png"
+            Task { @MainActor in WindowManager.shared.snapshotInspector(to: URL(filePath: path)) }
+        }
         #endif
     }
 }

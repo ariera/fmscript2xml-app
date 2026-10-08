@@ -39,8 +39,17 @@ private struct RecordView: View {
                 pane("Output XML") { OutputView(result: result, selectedLine: selectedLine) }
             }
             Divider()
-            DiagnosticsList(diagnostics: result.diagnostics, selectedLine: $selectedLine)
-                .frame(minHeight: 90, idealHeight: 140, maxHeight: 220)
+            if result.diagnostics.isEmpty {
+                Label("No problems found.", systemImage: "checkmark.circle")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+            } else {
+                DiagnosticsList(diagnostics: result.diagnostics, selectedLine: $selectedLine)
+                    .frame(minHeight: 90, idealHeight: 140, maxHeight: 220)
+            }
         }
         .frame(minWidth: 760, minHeight: 480)
     }
@@ -100,11 +109,10 @@ private struct InputLinesView: View {
     @Binding var selectedLine: Int?
 
     var body: some View {
-        let lines = result.input.replacingOccurrences(of: "\r\n", with: "\n").replacingOccurrences(of: "\r", with: "\n")
-            .components(separatedBy: "\n")
+        let lines = inputLines
         let marks = lineMarks()
         ScrollViewReader { proxy in
-            ScrollView([.vertical, .horizontal]) {
+            TopLeadingScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     ForEach(Array(lines.enumerated()), id: \.offset) { index, line in
                         let number = index + 1
@@ -132,6 +140,14 @@ private struct InputLinesView: View {
         }
     }
 
+    private var inputLines: [String] {
+        var lines = result.input.replacingOccurrences(of: "\r\n", with: "\n").replacingOccurrences(of: "\r", with: "\n")
+            .components(separatedBy: "\n")
+        // A trailing newline doesn't start a visible line
+        if lines.count > 1, lines.last == "" { lines.removeLast() }
+        return lines
+    }
+
     private func isSelected(_ line: Int) -> Bool {
         guard let selectedLine, let trace = result.trace(forLine: selectedLine) else { return line == selectedLine }
         return trace.sourceLines.contains(line)
@@ -151,7 +167,7 @@ private struct OutputView: View {
     let selectedLine: Int?
 
     var body: some View {
-        ScrollView([.vertical, .horizontal]) {
+        TopLeadingScrollView {
             Text(attributed)
                 .font(.system(.body, design: .monospaced))
                 .textSelection(.enabled)
@@ -171,6 +187,21 @@ private struct OutputView: View {
             s[lo..<hi].backgroundColor = Color.accentColor.opacity(0.18)
         }
         return s
+    }
+}
+
+/// Scrolls both ways and keeps content smaller than the pane at the top
+/// left (a plain two-axis ScrollView centres it).
+private struct TopLeadingScrollView<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView([.vertical, .horizontal]) {
+                content
+                    .frame(minWidth: geometry.size.width, minHeight: geometry.size.height, alignment: .topLeading)
+            }
+        }
     }
 }
 
