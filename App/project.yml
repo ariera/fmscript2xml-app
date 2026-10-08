@@ -58,7 +58,7 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # Sparkle's public EdDSA key (safe to commit). Empty disables updates.
         # Generate the key pair once with Sparkle's generate_keys (PLAN §10, Phase 6).
-        SPARKLE_PUBLIC_ED_KEY: ""
+        SPARKLE_PUBLIC_ED_KEY: "d8i4OGMJtrix3YWGFgTQE/nK3un1SeEDnY8Bk4crf14="
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_LSUIElement: YES
         INFOPLIST_KEY_CFBundleDisplayName: FM Script Paste
