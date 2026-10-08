@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
 # Rejects commits that would add production FileMaker scripts (PLAN.md D14).
 # Enable with: git config core.hooksPath .githooks
 exec "$(git rev-parse --show-toplevel)/tools/check-fixtures.sh" --staged

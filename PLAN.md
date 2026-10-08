@@ -9,7 +9,7 @@ Services shortcut) with a single signed app, and adds a snippet history and a
 visual inspector for debugging conversions.
 
 - Reference implementation: `~/dev/EMBO/fmscript2xml` (Python, v0.5.3)
-- Status: Phases 0–3 implemented; FileMaker paste checks and daily-use trial pending (see §13)
+- Status: Phases 0–6 implemented. Pending on Alejandro's side: FileMaker paste checks (Phase 0), Developer ID certificate, notarisation credentials and Sparkle key, then the first signed release (see §13)
 - Last updated: 2026-10-07
 
 ---
@@ -355,24 +355,27 @@ Exit: daily use replaces the Automator Quick Action.
 
 ### Phase 4 — History
 
-- [ ] `HistoryStore` (§5) with persistence, capacity, de-duplication.
-- [ ] Menu bar recent list with status dots; click to re-copy.
-- [ ] Settings: history length, keep after quitting, clear.
+- [x] `HistoryStore` (§5) with persistence, capacity, de-duplication.
+- [x] Menu bar recent list with status dots; click to re-copy.
+- [x] Settings: history length, keep after quitting, clear.
 
 ### Phase 5 — Inspector
 
-- [ ] Read-only first: sidebar, input/output panes, diagnostics list, hover
+- [x] Read-only first: sidebar, input/output panes, diagnostics list, hover
       linking, explain mode.
-- [ ] Editable: live reconvert, Fix buttons for suggestions, Copy as steps →
+- [x] Editable: live reconvert, Fix buttons for suggestions, Copy as steps →
       new entry, scratch draft.
 
 ### Phase 6 — Packaging and release
 
-- [ ] App icon, About window (converter version, links). *Icon done early
-      (2026-10-07): drawn by `tools/icon/make-icons.swift`, which writes the
-      app icon, the menu bar template icon and docs/logo.png.*
-- [ ] EMBO Developer ID signing, hardened runtime, notarization, DMG.
-- [ ] Local release script `tools/release.sh`, run on Alejandro's Mac (Q6):
+- [x] App icon, About window (converter version, links). *Icon drawn by
+      `tools/icon/make-icons.swift`, which writes the app icon, the menu bar
+      template icon and docs/logo.png.*
+- [x] EMBO Developer ID signing, hardened runtime, notarization, DMG.
+      *Implemented in tools/release.sh; hardened runtime on for Release.
+      The signed run waits for the certificate (none on this Mac yet); the
+      `--dry-run` path (ad-hoc, universal app, DMG) is verified.*
+- [x] Local release script `tools/release.sh`, run on Alejandro's Mac (Q6):
       build → `codesign` with EMBO's Developer ID Application certificate
       from the login keychain → `xcrun notarytool submit --keychain-profile`
       → staple → DMG → upload to a GitHub Release with `gh release create`.
@@ -380,11 +383,13 @@ Exit: daily use replaces the Automator Quick Action.
       Prerequisites: EMBO's Account Holder/Admin issues the Developer ID
       Application certificate; notarisation credentials stored once with
       `xcrun notarytool store-credentials`; Sparkle EdDSA key in the keychain.
-- [ ] Updates: Sparkle with an appcast published from GitHub Releases.
-- [ ] GPL-3.0-or-later notices in source headers and the About window;
+- [x] Updates: Sparkle with an appcast published from GitHub Releases.
+      *Dormant until `SPARKLE_PUBLIC_ED_KEY` is set in App/project.yml.*
+- [x] GPL-3.0-or-later notices in source headers and the About window;
       CONTRIBUTING.md (including the no-production-scripts rule).
-- [ ] User README: install, shortcut, troubleshooting; retire
-      `docs/automator-keyboard-shortcut.md` in the Python repo.
+- [x] User README: install, shortcut, troubleshooting. *Retiring
+      `docs/automator-keyboard-shortcut.md` in the Python repo is left for
+      later: the Python repo stays as is for now (Q8).*
 
 ### Later / ideas
 
@@ -500,6 +505,39 @@ Exit: daily use replaces the Automator Quick Action.
     and a distributed notification to trigger a conversion, so the pipeline
     can be exercised without touching the real clipboard.
   - Converter version is 0.6.0 (Python is 0.5.3).
+
+**Implementation notes (2026-10-08, Phases 4–6)**
+
+- *History* lives in a new package library, `FMHistory` (pure Foundation,
+  unit-tested with `swift test`), rather than in `App/History`. The file is
+  written atomically with owner-only permissions (0600); an unreadable file
+  is moved aside to `history.unreadable.json` instead of being overwritten.
+  Inspector edits record entries with origin `.inspector`.
+- *Inspector:* the editors are `NSTextView`s (line numbers, gutter marks,
+  hover tracking, text substitutions off so quotes and dashes aren't
+  changed). Two SwiftUI/Observation pitfalls cost a crash each and are worth
+  remembering: (1) a custom `Binding(get:set:)` that reads @Observable state
+  gets re-evaluated by SwiftUI during AppKit layout, outside any view
+  update; (2) changing an NSTextView inside `updateNSView` makes AppKit lay
+  out synchronously and re-enters SwiftUI's graph. Both corrupted
+  Observation's tracking and crashed. The code view therefore takes text as
+  a value plus a callback, and applies AppKit changes just after the update.
+- *Settings added beyond §8:* "Show in Dock" (requested 2026-10-08; switches
+  the activation policy, clicking the Dock icon opens the inspector) and
+  "Check for updates automatically" (when Sparkle is active). Auto-paste
+  (§4 step 7) is implemented: off by default, asks for Accessibility only
+  when turned on, waits for the shortcut's modifiers to be released before
+  sending ⌘V.
+- *Release:* `tools/release.sh` builds a universal (arm64 + x86_64)
+  Release archive, exports it with Developer ID, makes a DMG, signs,
+  notarises and staples it, generates the Sparkle appcast with the
+  keychain's EdDSA key and publishes `vX.Y.Z` with the DMG and
+  `appcast.xml`. The feed URL is
+  `…/releases/latest/download/appcast.xml`, so each release replaces the
+  feed. Sizes: app 5.8 MB, DMG 2.6 MB.
+- *Debug-only hooks* (not in Release builds): snapshot the inspector to a
+  PNG, and run "fix"/"copy" in the inspector, from scripts. Used to verify
+  layouts and flows without screen-recording permission.
 
 ---
 

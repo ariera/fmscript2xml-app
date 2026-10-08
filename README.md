@@ -11,27 +11,91 @@ FM Script Paste removes that work. Copy the steps as text, press **⌃⌥⌘F**,
 and paste them into FileMaker as real script steps. The conversion takes a
 fraction of a second.
 
-## What it is
+## Install
 
-A macOS menu bar app that converts plain-text FileMaker script steps on the
-clipboard into FileMaker script-step objects, ready to paste into the Script
-Workspace.
+Requires macOS 14 (Sonoma) or later. FileMaker Pro doesn't need to be
+installed for the conversion.
 
-Planned features:
+1. Download the latest `FM-Script-Paste-x.y.z.dmg` from
+   [Releases](https://github.com/ariera/fmscript2xml-app/releases).
+   No release has been published yet; until then, build it from source (below).
+2. Drag **FM Script Paste** to Applications and open it.
+3. The welcome window shows the shortcut and offers to launch the app at login.
+   Allow notifications: failures are reported that way.
 
-- Global, configurable shortcut (default ⌃⌥⌘F)
-- History of converted snippets (default 20), re-copy any of them from the menu bar
-- Editable inspector showing how each input line became XML, with errors,
-  warnings and "did you mean" fixes
-- No dependency on Python, and FileMaker doesn't need to be installed for the
-  conversion
+The app lives in the menu bar. Updates are offered automatically (Sparkle).
 
-Status: **in development** (Phases 0–3 of [PLAN.md](PLAN.md) done: converter,
-diagnostics, menu bar app). History, the full inspector and signed releases
-come next.
+## Use
 
-This is a native Swift port of [fmscript2xml](../fmscript2xml), the Python
-converter and CLI.
+1. Copy script steps as text, for example:
+
+   ```
+   Set Variable [ $count ; Value: Get ( FoundCount ) ]
+   If [ $count = 0 ]
+       Exit Script [ Text Result: "none" ]
+   End If
+   ```
+
+2. Press **⌃⌥⌘F**. A short message confirms "4 steps ready to paste".
+3. Paste into a script in FileMaker's Script Workspace.
+
+If a step can't be converted, the clipboard is left unchanged and a
+notification names the line, with a "did you mean" suggestion when there is
+one. Click **Open Inspector** to fix it.
+
+**History.** The menu bar lists the last conversions (failed ones included).
+Click one to copy its steps again. The number kept is set in Settings
+(default 20, 0 turns history off).
+
+**Inspector.** Menu bar → Inspector. It shows the history on the left, and for
+each conversion the input next to the XML it produced. Hover or select input
+lines to see the XML steps they became, and the reverse. The input is
+editable and reconverts as you type. Problems have **Fix** buttons. The Steps
+tab shows what the parser read for each step. **Copy as Steps** copies an
+edited version and saves it as a new history entry. **New Draft** gives an
+empty playground.
+
+**Settings.** Shortcuts (convert, open inspector), what to do on errors (leave
+the clipboard unchanged, or copy what converted), HUD and sound, paste
+automatically after converting, history length and whether to keep it after
+quitting, launch at login, show in Dock, and the installed FileMaker versions.
+
+## Troubleshooting
+
+- **The shortcut does nothing.** Another app may use ⌃⌥⌘F. Choose another
+  shortcut in Settings. If you used the old Automator Quick Action, turn its
+  shortcut off in System Settings → Keyboard → Keyboard Shortcuts → Services.
+- **"Already FileMaker steps".** The clipboard already holds FileMaker objects
+  (for example, steps copied in FileMaker). Paste them directly.
+- **"Clipboard has no text".** Copy the script text first.
+- **Pasting gives text, not steps.** Paste into a script's step list in the
+  Script Workspace, not into a calculation dialog.
+- **The menu bar icon is missing.** On a crowded menu bar macOS hides some
+  icons. Check System Settings → Menu Bar. You can also turn on "Show in
+  Dock" in Settings.
+- **No failure notifications.** Allow notifications for FM Script Paste in
+  System Settings → Notifications.
+- **Paste automatically does nothing.** It needs Accessibility permission:
+  System Settings → Privacy & Security → Accessibility.
+- **Steps that reference layouts, scripts or fields.** FileMaker resolves them
+  by name when you paste. A comment with the original line is added above
+  each one so you can check it.
+
+History is stored on this Mac only, in
+`~/Library/Application Support/fmscript2xml-app/history.json`. Scripts can
+contain credentials; turn off "Keep history after quitting" to keep history
+in memory only.
+
+## Command line
+
+The package includes a CLI with the same options as the original Python
+`fmscript2xml` tool:
+
+```sh
+swift run fmscript2xml script.txt                 # writes script.txt.xml
+swift run fmscript2xml script.txt --clipboard     # copies FileMaker steps
+swift run fmscript2xml script.txt --print --diagnostics --explain
+```
 
 ## Building
 
@@ -41,20 +105,11 @@ Requires macOS 14+, Xcode 16+ and [XcodeGen](https://github.com/yonaskolb/XcodeG
 ```sh
 swift test                      # converter tests (public fixtures)
 tools/build-app.sh Debug --open # build and run the menu bar app
-swift run fmscript2xml script.txt --print --diagnostics   # CLI
+tools/release.sh 1.0.0 --dry-run  # release build and DMG, unsigned
 ```
 
-## Development
-
-After cloning, enable the repository's git hooks:
-
-```sh
-git config core.hooksPath .githooks
-```
-
-The pre-commit hook (and the same check in CI) rejects fixtures outside
-`Tests/Fixtures/public/`. **Never commit production FileMaker scripts**; see
-PLAN.md §9 for how to test against them locally.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the project layout, tests and
+rules, and [PLAN.md](PLAN.md) for the design.
 
 ## Licence
 
