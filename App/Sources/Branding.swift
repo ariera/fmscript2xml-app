@@ -11,4 +11,9 @@ enum Branding {
     static let copyright = "Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera."
     static let license = "GPL-3.0-or-later"
     static let repositoryURL = URL(string: "https://github.com/ariera/fmscript2xml-app")!
+
+    /// Why the app exists, for the About window (the README has a longer version).
+    static let pitch = "FileMaker can't paste script steps written as text. Until now, every line had to be "
+        + "retyped by hand in the Script Workspace: slow and error-prone. \(appName) converts the text "
+        + "in a fraction of a second. Copy it, press the shortcut, paste into FileMaker."
 }

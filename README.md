@@ -2,9 +2,20 @@
 
 # FM Script Paste
 
+FileMaker can't paste script steps written as text. A step you see in an
+editor, a code review, documentation or an AI assistant has to be retyped by
+hand in the Script Workspace, line by line. For experienced developers this
+is slow, error-prone and frustrating work.
+
+FM Script Paste removes that work. Copy the steps as text, press **⌃⌥⌘F**,
+and paste them into FileMaker as real script steps. The conversion takes a
+fraction of a second.
+
+## What it is
+
 A macOS menu bar app that converts plain-text FileMaker script steps on the
 clipboard into FileMaker script-step objects, ready to paste into the Script
-Workspace. Press **⌃⌥⌘F**, then paste in FileMaker.
+Workspace.
 
 Planned features:
 

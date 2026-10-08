@@ -42,7 +42,7 @@ final class WindowManager {
         NSApp.orderFrontStandardAboutPanel(options: [
             .applicationName: Branding.appName,
             .credits: NSAttributedString(
-                string: "\(Branding.copyright)\nLicensed under \(Branding.license).\n"
+                string: "\(Branding.pitch)\n\n\(Branding.copyright)\nLicensed under \(Branding.license).\n"
                     + "Converter \(FMScriptKit.version)\n\(Branding.repositoryURL.absoluteString)",
                 attributes: [.font: NSFont.systemFont(ofSize: 11), .foregroundColor: NSColor.secondaryLabelColor]
             ),
