@@ -43,32 +43,38 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             WindowManager.shared.showWelcome()
         }
         #if DEBUG
-        // Let scripts drive the app without the hotkey
+        // Let scripts drive the app without the hotkey. A channel
+        // (-FMSPDebugChannel <name>) keeps a test instance from reacting to
+        // triggers meant for another one, and vice versa.
+        let channel = UserDefaults.standard.string(forKey: "FMSPDebugChannel").map { ".\($0)" } ?? ""
+        func debugName(_ hook: String) -> Notification.Name {
+            Notification.Name("\(Branding.bundleIdentifier).debug\(channel).\(hook)")
+        }
         DistributedNotificationCenter.default().addObserver(
-            forName: Notification.Name("\(Branding.bundleIdentifier).debug.convert"), object: nil, queue: .main
+            forName: debugName("convert"), object: nil, queue: .main
         ) { _ in
             Task { @MainActor in AppModel.shared.convertClipboard() }
         }
         DistributedNotificationCenter.default().addObserver(
-            forName: Notification.Name("\(Branding.bundleIdentifier).debug.snapshotInspector"), object: nil, queue: .main
+            forName: debugName("snapshotInspector"), object: nil, queue: .main
         ) { note in
             let path = note.object as? String ?? NSTemporaryDirectory() + "inspector.png"
             Task { @MainActor in WindowManager.shared.snapshotInspector(to: URL(filePath: path)) }
         }
         DistributedNotificationCenter.default().addObserver(
-            forName: Notification.Name("\(Branding.bundleIdentifier).debug.inspector"), object: nil, queue: .main
+            forName: debugName("inspector"), object: nil, queue: .main
         ) { note in
             let command = note.object as? String ?? ""
             Task { @MainActor in InspectorModel.shared.debugCommand(command) }
         }
         DistributedNotificationCenter.default().addObserver(
-            forName: Notification.Name("\(Branding.bundleIdentifier).debug.snapshotAbout"), object: nil, queue: .main
+            forName: debugName("snapshotAbout"), object: nil, queue: .main
         ) { note in
             let path = note.object as? String ?? NSTemporaryDirectory() + "about.png"
             Task { @MainActor in WindowManager.shared.snapshotAbout(to: URL(filePath: path)) }
         }
         DistributedNotificationCenter.default().addObserver(
-            forName: Notification.Name("\(Branding.bundleIdentifier).debug.snapshotSettings"), object: nil, queue: .main
+            forName: debugName("snapshotSettings"), object: nil, queue: .main
         ) { note in
             let path = note.object as? String ?? NSTemporaryDirectory() + "settings.png"
             Task { @MainActor in
@@ -80,7 +86,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 NSApp.activate()
                 try? await Task.sleep(for: .milliseconds(800))
                 defer { window.close() }
-                if let image = CGWindowListCreateImage(.null, .optionIncludingWindow, CGWindowID(window.windowNumber), [.boundsIgnoreFraming]) {
+                if let image = CGWindowListCreateImage(.null, .optionIncludingWindow, CGWindowID(window.windowNumber), [.bestResolution]) {
                     try? NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])?.write(to: URL(filePath: path))
                     debugLog("settings snapshot: \(path)")
                 }

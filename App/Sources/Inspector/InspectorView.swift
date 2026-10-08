@@ -199,14 +199,16 @@ private struct DetailView: View {
         VStack(spacing: 0) {
             header
             Divider()
-            VSplitView {
-                HSplitView {
+            // Draggable dividers rather than HSplitView/VSplitView, whose
+            // minimum size made the content wider than the window.
+            ResizableSplit(axis: .vertical, storageKey: "inspectorBottomFraction", defaultFraction: 0.72, minFirst: 180, minSecond: 80) {
+                ResizableSplit(axis: .horizontal, storageKey: "inspectorPaneFraction", defaultFraction: 0.5, minFirst: 240, minSecond: 240) {
                     pane("Input", trailing: draft.isEdited ? "edited" : nil) { inputEditor }
+                } second: {
                     pane("Output XML", trailing: nil) { xmlView }
                 }
-                .frame(minHeight: 200)
+            } second: {
                 bottomPane
-                    .frame(minHeight: 80, idealHeight: 170)
             }
         }
     }
@@ -281,7 +283,6 @@ private struct DetailView: View {
             Divider()
             content()
         }
-        .frame(minWidth: 280)
     }
 
     // MARK: Input and XML
@@ -415,6 +416,77 @@ private struct DetailView: View {
     }
 }
 
+/// Two panes with a draggable divider; the split is remembered.
+private struct ResizableSplit<First: View, Second: View>: View {
+    enum Axis { case horizontal, vertical }
+
+    let axis: Axis
+    /// Also names the coordinate space the divider is dragged in.
+    let storageKey: String
+    @AppStorage private var fraction: Double
+    let minFirst: CGFloat
+    let minSecond: CGFloat
+    @ViewBuilder let first: First
+    @ViewBuilder let second: Second
+
+    init(axis: Axis, storageKey: String, defaultFraction: Double, minFirst: CGFloat, minSecond: CGFloat,
+         @ViewBuilder first: () -> First, @ViewBuilder second: () -> Second) {
+        self.axis = axis
+        self.storageKey = storageKey
+        _fraction = AppStorage(wrappedValue: defaultFraction, storageKey)
+        self.minFirst = minFirst
+        self.minSecond = minSecond
+        self.first = first()
+        self.second = second()
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            let total = axis == .horizontal ? geometry.size.width : geometry.size.height
+            let size = clamp(total * fraction, total)
+            let layout = axis == .horizontal ? AnyLayout(HStackLayout(spacing: 0)) : AnyLayout(VStackLayout(spacing: 0))
+            layout {
+                first
+                    .frame(width: axis == .horizontal ? size : nil, height: axis == .vertical ? size : nil)
+                    .clipped()
+                divider(total: total)
+                second
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .clipped()
+            .coordinateSpace(.named(storageKey))
+        }
+    }
+
+    private func clamp(_ value: CGFloat, _ total: CGFloat) -> CGFloat {
+        max(minFirst, min(value, total - minSecond - 1))
+    }
+
+    private func divider(total: CGFloat) -> some View {
+        Rectangle()
+            .fill(Color(nsColor: .separatorColor))
+            .frame(width: axis == .horizontal ? 1 : nil, height: axis == .vertical ? 1 : nil)
+            .overlay {
+                // A wider, invisible grab area
+                Color.clear
+                    .frame(width: axis == .horizontal ? 8 : nil, height: axis == .vertical ? 8 : nil)
+                    .contentShape(Rectangle())
+                    .onHover { inside in
+                        let cursor: NSCursor = axis == .horizontal ? .resizeLeftRight : .resizeUpDown
+                        if inside { cursor.push() } else { NSCursor.pop() }
+                    }
+                    .gesture(DragGesture(coordinateSpace: .named(storageKey)).onChanged { value in
+                        guard total > 0 else { return }
+                        let position = axis == .horizontal ? value.location.x : value.location.y
+                        fraction = Double(clamp(position, total) / total)
+                    })
+            }
+            .zIndex(1)
+    }
+}
+
 /// Explain mode: what the parser saw for each step.
 private struct ExplainList: View {
     let result: ConversionResult
@@ -529,3 +601,4 @@ enum XMLSyntax {
         return out
     }
 }
+

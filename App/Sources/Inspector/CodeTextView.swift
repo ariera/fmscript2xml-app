@@ -56,7 +56,9 @@ struct CodeTextView: NSViewRepresentable {
         textView.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
         textView.textColor = .labelColor
         textView.backgroundColor = .textBackgroundColor
-        textView.textContainerInset = NSSize(width: 4, height: 6)
+        // The line-number ruler overlays the clip view (current macOS tiling),
+        // so leave room for it: the inset applies to both sides.
+        textView.textContainerInset = NSSize(width: LineNumberRuler.thickness + 6, height: 6)
         // No wrapping: scroll horizontally like a code editor
         textView.isHorizontallyResizable = true
         textView.isVerticallyResizable = true
@@ -75,6 +77,13 @@ struct CodeTextView: NSViewRepresentable {
         context.coordinator.textView = textView
         context.coordinator.ruler = ruler
         return scrollView
+    }
+
+    /// Take whatever space is offered: the text scrolls, so its width must
+    /// not become the view's minimum (that pushed the inspector wider than
+    /// its window).
+    func sizeThatFits(_ proposal: ProposedViewSize, nsView: NSScrollView, context: Context) -> CGSize? {
+        CGSize(width: proposal.width ?? 280, height: proposal.height ?? 160)
     }
 
     func updateNSView(_ scrollView: NSScrollView, context: Context) {
@@ -112,11 +121,21 @@ struct CodeTextView: NSViewRepresentable {
             textView.isSelectable = true
 
             if textView.string != config.text {
+                let isEditing = textView.window?.firstResponder === textView
                 let selection = textView.selectedRanges
                 let length = (config.text as NSString).length
                 textView.string = config.text
-                let kept = selection.filter { $0.rangeValue.upperBound <= length }
-                textView.selectedRanges = kept.isEmpty ? [NSValue(range: NSRange(location: length, length: 0))] : kept
+                if isEditing {
+                    let kept = selection.filter { $0.rangeValue.upperBound <= length }
+                    textView.selectedRanges = kept.isEmpty ? [NSValue(range: NSRange(location: length, length: 0))] : kept
+                } else {
+                    // New content (another entry, a reconversion): start at the top left
+                    textView.selectedRanges = [NSValue(range: NSRange(location: 0, length: 0))]
+                    if let clip = textView.enclosingScrollView?.contentView {
+                        clip.scroll(to: .zero)
+                        textView.enclosingScrollView?.reflectScrolledClipView(clip)
+                    }
+                }
             }
 
             // Syntax colours (attributes on the text storage; read-only use)
@@ -256,6 +275,7 @@ final class HoverTextView: NSTextView {
 
 /// Line numbers, plus a coloured bar on lines with errors or warnings.
 final class LineNumberRuler: NSRulerView {
+    static let thickness: CGFloat = 40
     var marks: [Int: NSColor] = [:]
     private weak var textView: NSTextView?
 
@@ -263,7 +283,7 @@ final class LineNumberRuler: NSRulerView {
         self.textView = textView
         super.init(scrollView: textView.enclosingScrollView, orientation: .verticalRuler)
         clientView = textView
-        ruleThickness = 40
+        ruleThickness = Self.thickness
         NotificationCenter.default.addObserver(self, selector: #selector(redraw),
                                                name: NSView.boundsDidChangeNotification, object: nil)
     }

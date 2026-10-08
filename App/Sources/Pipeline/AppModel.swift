@@ -50,7 +50,10 @@ final class AppModel {
     func convertClipboard() {
         // 1. Who was frontmost (an LSUIElement app doesn't take focus)
         let front = NSWorkspace.shared.frontmostApplication
-        let source = front.map { SourceApp(name: $0.localizedName ?? "Unknown", bundleIdentifier: $0.bundleIdentifier) }
+        var source = front.map { SourceApp(name: $0.localizedName ?? "Unknown", bundleIdentifier: $0.bundleIdentifier) }
+        #if DEBUG
+        if let name = UserDefaults.standard.string(forKey: "FMSPSourceApp") { source = SourceApp(name: name, bundleIdentifier: nil) }
+        #endif
 
         // 2. Read the clipboard
         if !FMClipboard.flavors(on: pasteboard).isEmpty {

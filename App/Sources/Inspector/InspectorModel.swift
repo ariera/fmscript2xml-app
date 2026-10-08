@@ -193,12 +193,15 @@ final class InspectorModel {
         return item
     }
 
-    /// Selects an entry, or the newest one. With history off, the last
-    /// conversion opens as a scratch.
+    /// Selects an entry, or the latest conversion (not a pinned one at the
+    /// top of the list). With history off, the last conversion opens as a
+    /// scratch.
     func show(entryID: UUID? = nil) {
         if let entryID, history.entry(id: entryID) != nil {
             selection = .entry(entryID)
-        } else if let newest = history.entries.first {
+        } else if let last = app.lastEntry, history.entry(id: last.id) != nil {
+            selection = .entry(last.id)
+        } else if let newest = history.entries.max(by: { $0.date < $1.date }) {
             selection = .entry(newest.id)
         } else if let last = app.lastEntry, history.capacity == 0 {
             newScratch(text: last.input)

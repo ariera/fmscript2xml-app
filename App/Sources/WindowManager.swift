@@ -53,7 +53,7 @@ final class WindowManager {
         guard let window = about else { return }
         Task {
             try? await Task.sleep(for: .milliseconds(500))
-            if let image = CGWindowListCreateImage(.null, .optionIncludingWindow, CGWindowID(window.windowNumber), [.boundsIgnoreFraming]) {
+            if let image = CGWindowListCreateImage(.null, .optionIncludingWindow, CGWindowID(window.windowNumber), [.bestResolution]) {
                 try? NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])?.write(to: url)
                 debugLog("about snapshot: \(url.path)")
             }
@@ -61,16 +61,16 @@ final class WindowManager {
     }
 
     /// Opens the inspector, optionally resizes it, and writes its contents to a PNG.
-    func snapshotInspector(to url: URL, size: NSSize = NSSize(width: 1600, height: 900)) {
+    func snapshotInspector(to url: URL, size: NSSize = NSSize(width: 1180, height: 700)) {
         showInspector()
         guard let window = inspector, let view = window.contentView else { return }
-        window.setContentSize(size)
+        window.setFrame(window.frameRect(forContentRect: NSRect(origin: window.frame.origin, size: size)), display: true)
         view.layoutSubtreeIfNeeded()
         Task {
-            try? await Task.sleep(for: .milliseconds(500))
+            try? await Task.sleep(for: .milliseconds(1200))
             // The window server image includes materials (the sidebar) that
             // cacheDisplay leaves blank; fall back to cacheDisplay.
-            if let image = CGWindowListCreateImage(.null, .optionIncludingWindow, CGWindowID(window.windowNumber), [.boundsIgnoreFraming]) {
+            if let image = CGWindowListCreateImage(.null, .optionIncludingWindow, CGWindowID(window.windowNumber), [.bestResolution]) {
                 try? NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])?.write(to: url)
             } else if let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) {
                 view.cacheDisplay(in: view.bounds, to: rep)
