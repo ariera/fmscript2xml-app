@@ -7,7 +7,7 @@ import Foundation
 /// The bundle identifier itself is set in App/project.yml.
 enum Branding {
     static let appName = "fmscript2xml"
-    static let bundleIdentifier = "io.github.ariera.fmscriptpaste"
+    static let bundleIdentifier = "io.github.ariera.fmscript2xml"
     static let copyright = "Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera."
     static let license = "GPL-3.0-or-later"
     static let repositoryURL = URL(string: "https://github.com/ariera/fmscript2xml-app")!

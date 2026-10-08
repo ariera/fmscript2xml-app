@@ -35,6 +35,7 @@
 # Environment:
 #   FMSP_TEAM_ID          Apple Developer team ID (required unless --dry-run)
 #   FMSP_NOTARY_PROFILE   notarytool keychain profile (default: fmscript2xml-notary)
+#   FMSP_NOTES            extra Markdown for the top of the release notes
 set -euo pipefail
 
 usage() { echo "usage: $0 <version, e.g. 0.1 or 1.2.3> [--ad-hoc | --dry-run]" >&2; exit 2; }
@@ -188,6 +189,7 @@ fi
 notes="$out/notes.md"
 {
   [ "$major" = "0" ] && printf '**Beta.** %s is in beta for all 0.x versions.\n\n' "$app_name"
+  [ -n "${FMSP_NOTES:-}" ] && printf '%s\n\n' "$FMSP_NOTES"
   if [ "$mode" = "adhoc" ]; then
     cat <<'NOTES'
 ### Installing

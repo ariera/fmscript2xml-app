@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-fmscript2xml (`io.github.ariera.fmscriptpaste`, repo `ariera/fmscript2xml-app`): a native macOS (Swift/SwiftUI, macOS 14+) menu bar app that converts plain-text
+fmscript2xml (`io.github.ariera.fmscript2xml`, repo `ariera/fmscript2xml-app`): a native macOS (Swift/SwiftUI, macOS 14+) menu bar app that converts plain-text
 FileMaker script steps on the clipboard into FileMaker clipboard objects.
 
 - **Read [PLAN.md](PLAN.md) first.** It holds the architecture, decisions

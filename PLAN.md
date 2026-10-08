@@ -64,7 +64,7 @@ Consequences:
 | D12 | **Fully open source, GPL-3.0-or-later**, hosted at `github.com/ariera/fmscript2xml-app` | Copyleft keeps forks open. Compatible with the MIT dependencies (KeyboardShortcuts, Sparkle). Rules out the Mac App Store, which D10 already does. |
 | D13 | **Python implementation is frozen** once Swift reaches parity | One implementation to maintain. |
 | D14 | **Production FileMaker scripts are never committed** | They are EMBO's internal code. They may be used for local testing only (§9). |
-| D15 | **App name: fmscript2xml** (renamed from "FM Script Paste" on 2026-10-08, back to the project's original name); bundle ID `io.github.ariera.fmscriptpaste`; repo stays `ariera/fmscript2xml-app` | Name says what it does. Define the name and bundle ID in one place (`project.yml` / a `Branding` constant). |
+| D15 | **App name: fmscript2xml** (renamed from "FM Script Paste" on 2026-10-08, back to the project's original name); bundle ID `io.github.ariera.fmscript2xml`; repo stays `ariera/fmscript2xml-app` | Name says what it does. Define the name and bundle ID in one place (`project.yml` / a `Branding` constant). |
 | D16 | **Copyright notice**: "Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera." | Credits the original author; fits a copyleft project open to contributions. Used in source headers and the About window. |
 | D17 | **Tooling**: XcodeGen `project.yml` for the app target (no hand-edited `.xcodeproj`); SwiftPM for `FMScriptKit`, `FMClipboard` and the CLI; Swift 6 language mode with strict concurrency; Swift Testing | Agents and diffs handle text project files well. |
 | D18 | **No telemetry or crash reporting; English only; CLI is a developer/testing tool in v1** | Keeps v1 small and private. |
@@ -584,7 +584,9 @@ Exit: daily use replaces the Automator Quick Action.
   the README and release/DMG names. Internal identifiers stay (Xcode target
   `FMScriptPaste`, Swift module `FMScriptPasteApp`, `FMSP*` debug flags),
   because an Xcode scheme named fmscript2xml would collide with the
-  package's CLI target of that name.
+  package's CLI target of that name. The bundle ID changed too, to
+  `io.github.ariera.fmscript2xml` (from 0.3): settings start fresh and 0.2.1
+  doesn't update to it, so 0.2.1 users reinstall once.
 - *Debug-only hooks* (not in Release builds): snapshot the inspector to a
   PNG, and run "fix"/"copy" in the inspector, from scripts. Used to verify
   layouts and flows without screen-recording permission.

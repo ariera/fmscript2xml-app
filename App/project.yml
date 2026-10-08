@@ -56,7 +56,7 @@ targets:
         PRODUCT_NAME: fmscript2xml
         # Keep the Swift module name distinct from the package's fmscript2xml CLI target
         PRODUCT_MODULE_NAME: FMScriptPasteApp
-        PRODUCT_BUNDLE_IDENTIFIER: io.github.ariera.fmscriptpaste
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.ariera.fmscript2xml
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # Sparkle's public EdDSA key (safe to commit). Empty disables updates.
         # Generate the key pair once with Sparkle's generate_keys (PLAN §10, Phase 6).
