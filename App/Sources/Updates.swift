@@ -47,8 +47,9 @@ final class Updates: NSObject {
         #endif
         let controller = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: self, userDriverDelegate: self)
         self.controller = controller
-        canCheckObservation = controller.updater.observe(\.canCheckForUpdates, options: [.initial, .new]) { [weak self] updater, _ in
-            let value = updater.canCheckForUpdates
+        canCheckObservation = controller.updater.observe(\.canCheckForUpdates, options: [.initial, .new]) { [weak self] _, change in
+            // Read the value from the change: the updater itself is main-actor isolated
+            let value = change.newValue ?? false
             MainActor.assumeIsolated { self?.canCheckForUpdates = value }
         }
     }
