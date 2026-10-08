@@ -24,11 +24,11 @@ let output = root.appending(path: "docs/images/workflow.gif")
 
 // MARK: Layout
 
-let W: CGFloat = 960, H: CGFloat = 440
+let W: CGFloat = 1010, H: CGFloat = 440
 let fps: Double = 20
 let menuBarHeight: CGFloat = 26
 let left = CGRect(x: 18, y: 46, width: 452, height: 284)
-let right = CGRect(x: 490, y: 46, width: 452, height: 284)
+let right = CGRect(x: 490, y: 46, width: 502, height: 284)
 let titleBar: CGFloat = 30
 let editorFont = NSFont(name: "Menlo", size: 11) ?? .monospacedSystemFont(ofSize: 11, weight: .regular)
 let lineHeight: CGFloat = 19
@@ -317,11 +317,11 @@ func render(_ s: State) -> CGImage {
     }
 
     // Script Workspace (right)
-    window(right, title: "Script Workspace", active: s.rightActive)
+    window(right, title: "FileMaker Pro — Script Workspace", active: s.rightActive)
     let tab = CGRect(x: right.minX + 12, y: right.minY + titleBar + 8, width: 120, height: 24)
     roundedRect(tab, 6, fill: color(0xE6EEF9), stroke: color(0xC5D4EA))
     text("Update Totals", at: CGPoint(x: tab.minX + 12, y: tab.minY + 4), font: .systemFont(ofSize: 12, weight: .medium), color: color(0x1D3B66))
-    let stepFont = NSFont.systemFont(ofSize: 12)
+    let stepFont = editorFont
     let gutter = CGRect(x: right.minX + 1, y: stepsOrigin.y - 6, width: 32, height: right.maxY - stepsOrigin.y)
     color(0xF6F7F9).setFill()
     gutter.fill()
@@ -336,7 +336,7 @@ func render(_ s: State) -> CGImage {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             let indent = CGFloat(line.prefix { $0 == " " }.count / 4) * 18
             let isComment = trimmed.hasPrefix("#")
-            text(trimmed, at: CGPoint(x: stepsOrigin.x + indent, y: y), font: isComment ? .systemFont(ofSize: 12, weight: .regular) : stepFont,
+            text(trimmed, at: CGPoint(x: stepsOrigin.x + indent, y: y), font: stepFont,
                  color: isComment ? color(0x3F8F4F) : color(0x1D1D1F))
         }
     } else if s.caretVisible {
