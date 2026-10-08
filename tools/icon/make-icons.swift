@@ -163,6 +163,34 @@ func drawAppIcon(_ ctx: CGContext) {
     ctx.restoreGState()
 }
 
+/// Development builds: the app icon with an orange "DEV" label, so a
+/// development build is never mistaken for a release in the Dock or Finder.
+func drawDevAppIcon(_ ctx: CGContext) {
+    drawAppIcon(ctx)
+    let label = CGRect(x: 302, y: 744, width: 420, height: 132)
+    ctx.saveGState()
+    shadow(ctx, y: 6, blur: 16, rgb(0x000000, 0.35))
+    ctx.setFillColor(rgb(0xFF8A00))
+    roundedRect(ctx, label.minX, label.minY, label.width, label.height, 34)
+    ctx.fillPath()
+    ctx.restoreGState()
+    ctx.setStrokeColor(rgb(0xFFFFFF))
+    ctx.setLineWidth(10)
+    roundedRect(ctx, label.minX, label.minY, label.width, label.height, 34)
+    ctx.strokePath()
+
+    NSGraphicsContext.saveGraphicsState()
+    NSGraphicsContext.current = NSGraphicsContext(cgContext: ctx, flipped: true)
+    let text = NSAttributedString(string: "DEV", attributes: [
+        .font: NSFont.systemFont(ofSize: 104, weight: .heavy),
+        .foregroundColor: NSColor.white,
+        .kern: 8,
+    ])
+    let size = text.size()
+    text.draw(at: CGPoint(x: label.midX - size.width / 2 + 4, y: label.midY - size.height / 2))
+    NSGraphicsContext.restoreGraphicsState()
+}
+
 // MARK: Menu bar template icon, on an 18 pt grid
 
 /// The same story reduced to strokes: two typed lines, the strike, two steps.
@@ -188,24 +216,29 @@ func write(_ data: Data, _ url: URL) throws {
 
 func contents(_ json: String) -> Data { Data((json + "\n").utf8) }
 
-// App icon: 16–512 pt at 1x and 2x
-let appIcon = assets.appending(path: "AppIcon.appiconset")
-var images: [String] = []
-for pt in [16, 32, 128, 256, 512] {
-    for scale in [1, 2] {
-        let name = "icon_\(pt)x\(pt)\(scale == 2 ? "@2x" : "").png"
-        try write(render(pixels: pt * scale, unit: 1024, drawAppIcon), appIcon.appending(path: name))
-        images.append(#"    { "filename" : "\#(name)", "idiom" : "mac", "scale" : "\#(scale)x", "size" : "\#(pt)x\#(pt)" }"#)
+/// An app icon set: 16–512 pt at 1x and 2x.
+func writeAppIconSet(_ name: String, _ draw: (CGContext) -> Void) throws {
+    let set = assets.appending(path: "\(name).appiconset")
+    var images: [String] = []
+    for pt in [16, 32, 128, 256, 512] {
+        for scale in [1, 2] {
+            let file = "icon_\(pt)x\(pt)\(scale == 2 ? "@2x" : "").png"
+            try write(render(pixels: pt * scale, unit: 1024, draw), set.appending(path: file))
+            images.append(#"    { "filename" : "\#(file)", "idiom" : "mac", "scale" : "\#(scale)x", "size" : "\#(pt)x\#(pt)" }"#)
+        }
     }
+    try write(contents("""
+    {
+      "images" : [
+    \(images.joined(separator: ",\n"))
+      ],
+      "info" : { "author" : "xcode", "version" : 1 }
+    }
+    """), set.appending(path: "Contents.json"))
 }
-try write(contents("""
-{
-  "images" : [
-\(images.joined(separator: ",\n"))
-  ],
-  "info" : { "author" : "xcode", "version" : 1 }
-}
-"""), appIcon.appending(path: "Contents.json"))
+
+try writeAppIconSet("AppIcon", drawAppIcon)
+try writeAppIconSet("AppIconDev", drawDevAppIcon)
 
 // Menu bar template icon: 18 pt at 1x and 2x
 let menuIcon = assets.appending(path: "MenuBarIcon.imageset")
@@ -229,4 +262,4 @@ try write(contents(#"{ "info" : { "author" : "xcode", "version" : 1 } }"#), asse
 // README logo
 try write(render(pixels: 256, unit: 1024, drawAppIcon), root.appending(path: "docs/logo.png"))
 
-print("Wrote \(appIcon.path), \(menuIcon.path) and docs/logo.png")
+print("Wrote AppIcon, AppIconDev, MenuBarIcon and docs/logo.png")

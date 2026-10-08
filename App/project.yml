@@ -67,5 +67,12 @@ targets:
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.developer-tools
         INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera. GPL-3.0-or-later."
       configs:
+        # Development builds are a separate app: own name, bundle ID (so own
+        # settings and shortcuts) and an icon with a "DEV" label.
+        Debug:
+          PRODUCT_NAME: fmscript2xml Dev
+          PRODUCT_BUNDLE_IDENTIFIER: io.github.ariera.fmscript2xml.dev
+          INFOPLIST_KEY_CFBundleDisplayName: fmscript2xml Dev
+          ASSETCATALOG_COMPILER_APPICON_NAME: AppIconDev
         Release:
           ENABLE_HARDENED_RUNTIME: YES

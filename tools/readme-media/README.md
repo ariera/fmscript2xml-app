@@ -6,7 +6,7 @@
 - `inspector.png`, `settings.png` and `about.png` are captures of a Debug build
   filled with synthetic scripts. Debug builds accept `-FMSPDebugChannel`,
   `-FMSPPasteboardName`, `-FMSPSourceApp` and `-FMSPSuppressNotifications`, and
-  listen for `io.github.ariera.fmscript2xml.debug.<channel>.<hook>` distributed
+  listen for `io.github.ariera.fmscript2xml.dev.debug.<channel>.<hook>` distributed
   notifications (`convert`, `inspector`, `snapshotInspector`,
   `snapshotSettings`, `snapshotAbout`); see `App/Sources/FMScriptPasteApp.swift`.
 

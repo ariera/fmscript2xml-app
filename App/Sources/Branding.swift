@@ -6,8 +6,16 @@ import Foundation
 /// The app's name and identifiers, defined in one place (D15, D16).
 /// The bundle identifier itself is set in App/project.yml.
 enum Branding {
+    #if DEBUG
+    /// Development builds are a separate app ("fmscript2xml Dev", bundle ID
+    /// io.github.ariera.fmscript2xml.dev, icon with a DEV label).
+    static let appName = "fmscript2xml Dev"
+    static let isDevelopmentBuild = true
+    #else
     static let appName = "fmscript2xml"
-    static let bundleIdentifier = "io.github.ariera.fmscript2xml"
+    static let isDevelopmentBuild = false
+    #endif
+    static var bundleIdentifier: String { Bundle.main.bundleIdentifier ?? "io.github.ariera.fmscript2xml" }
     static let copyright = "Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera."
     static let license = "GPL-3.0-or-later"
     static let repositoryURL = URL(string: "https://github.com/ariera/fmscript2xml-app")!
@@ -32,6 +40,6 @@ enum Branding {
 
     /// Why the app exists, for the About window (the README has a longer version).
     static let pitch = "FileMaker can't paste script steps written as text. Until now, every line had to be "
-        + "retyped by hand in the Script Workspace: slow and error-prone. \(appName) converts the text "
+        + "retyped by hand in the Script Workspace: slow and error-prone. fmscript2xml converts the text "
         + "in a fraction of a second. Copy it, press the shortcut, paste into FileMaker."
 }

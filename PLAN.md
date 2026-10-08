@@ -587,6 +587,11 @@ Exit: daily use replaces the Automator Quick Action.
   package's CLI target of that name. The bundle ID changed too, to
   `io.github.ariera.fmscript2xml` (from 0.3): settings start fresh and 0.2.1
   doesn't update to it, so 0.2.1 users reinstall once.
+- *Development builds are a separate app (2026-10-08):* Debug builds are
+  "fmscript2xml Dev" (`io.github.ariera.fmscript2xml.dev`), with their own
+  settings, an app icon with an orange "DEV" label (AppIconDev, drawn by
+  tools/icon/make-icons.swift) and "DEV" next to the menu bar icon, so they
+  can't be confused with an installed release.
 - *Debug-only hooks* (not in Release builds): snapshot the inspector to a
   PNG, and run "fix"/"copy" in the inspector, from scripts. Used to verify
   layouts and flows without screen-recording permission.

@@ -41,8 +41,12 @@ fixtures. You can list names that must never be committed, one per line, in
 
 ```sh
 swift test                          # all package tests, public fixtures
-tools/build-app.sh Debug            # the app compiles
+tools/build-app.sh Debug --open     # builds and opens "fmscript2xml Dev"
 ```
+
+Debug builds are a separate app, "fmscript2xml Dev" (bundle ID
+`io.github.ariera.fmscript2xml.dev`, own settings, a DEV label on the icon
+and in the menu bar), so they never mix with an installed release.
 
 Every fixture is a folder with `input.txt` and `expected.xml`. To add one:
 

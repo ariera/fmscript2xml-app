@@ -15,8 +15,18 @@ struct FMScriptPasteApp: App {
             MenuContent()
         } label: {
             // Template image: macOS tints it for light/dark menu bars
-            Image("MenuBarIcon")
+            if Branding.isDevelopmentBuild {
+                Label {
+                    Text("DEV")
+                } icon: {
+                    Image("MenuBarIcon")
+                }
+                .labelStyle(.titleAndIcon)
                 .accessibilityLabel(Branding.appName)
+            } else {
+                Image("MenuBarIcon")
+                    .accessibilityLabel(Branding.appName)
+            }
         }
         .menuBarExtraStyle(.menu)
 
