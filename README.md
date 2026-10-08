@@ -133,4 +133,4 @@ rules, and [PLAN.md](PLAN.md) for the design.
 
 GPL-3.0-or-later. See [LICENSE](LICENSE).
 
-Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera.
+Copyright © 2026 the fmscript2xml-app contributors. ~Created~ Needed and also prompted by Alejandro Riera.
