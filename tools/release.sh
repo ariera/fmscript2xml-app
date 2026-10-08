@@ -8,7 +8,7 @@
 #   tools/release.sh <version> [--ad-hoc | --dry-run]
 #
 # <version> is x.y or x.y.z. Every 0.x release is a beta: 0.1 is published
-# as "FM Script Paste 0.1 beta" (tag v0.1.0). The GitHub pre-release flag is
+# as "fmscript2xml 0.1 beta" (tag v0.1.0). The GitHub pre-release flag is
 # not used, because releases/latest (download links and the Sparkle feed)
 # skips pre-releases.
 #
@@ -24,7 +24,7 @@
 #   1. "Developer ID Application" certificate for EMBO's team in the login
 #      keychain (issued by EMBO's Account Holder/Admin).
 #   2. Notarisation credentials:
-#        xcrun notarytool store-credentials fmscriptpaste-notary \
+#        xcrun notarytool store-credentials fmscript2xml-notary \
 #          --apple-id <id> --team-id <TEAM_ID> --password <app-specific password>
 #   3. Sparkle EdDSA key: run Sparkle's generate_keys once (it stores the
 #      private key in the keychain and prints the public key), and put the
@@ -34,7 +34,7 @@
 #
 # Environment:
 #   FMSP_TEAM_ID          Apple Developer team ID (required unless --dry-run)
-#   FMSP_NOTARY_PROFILE   notarytool keychain profile (default: fmscriptpaste-notary)
+#   FMSP_NOTARY_PROFILE   notarytool keychain profile (default: fmscript2xml-notary)
 set -euo pipefail
 
 usage() { echo "usage: $0 <version, e.g. 0.1 or 1.2.3> [--ad-hoc | --dry-run]" >&2; exit 2; }
@@ -61,12 +61,12 @@ dry=0
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 out="$root/build/release"
-app_name="FM Script Paste"
+app_name="fmscript2xml"
 repo="ariera/fmscript2xml-app"
 tag="v$version"
 build_number="$(git -C "$root" rev-list --count HEAD)"
 team="${FMSP_TEAM_ID:-}"
-notary_profile="${FMSP_NOTARY_PROFILE:-fmscriptpaste-notary}"
+notary_profile="${FMSP_NOTARY_PROFILE:-fmscript2xml-notary}"
 identity="Developer ID Application"
 
 step() { printf '\n==> %s\n' "$*"; }
@@ -148,7 +148,7 @@ echo "Built $(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$p
 
 # --- DMG --------------------------------------------------------------------
 step "DMG"
-dmg="$out/FM-Script-Paste-${display// /-}.dmg"
+dmg="$out/fmscript2xml-${display// /-}.dmg"
 staging="$out/dmg"
 mkdir -p "$staging"
 ditto "$app" "$staging/$app_name.app"
@@ -194,13 +194,13 @@ notes="$out/notes.md"
 
 This build isn't notarised by Apple, so macOS blocks it the first time:
 
-1. Open the DMG and drag **FM Script Paste** to Applications.
+1. Open the DMG and drag **fmscript2xml** to Applications.
 2. Open it. macOS says it can't verify the developer. Click **Done**.
 3. Open **System Settings → Privacy & Security**, scroll down, click
-   **Open Anyway** next to "FM Script Paste was blocked", and confirm.
+   **Open Anyway** next to "fmscript2xml was blocked", and confirm.
 
 You only do this once. Alternatively, in Terminal:
-`xattr -dr com.apple.quarantine "/Applications/FM Script Paste.app"`
+`xattr -dr com.apple.quarantine "/Applications/fmscript2xml.app"`
 
 NOTES
   fi

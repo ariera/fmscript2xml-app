@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <fmxmlsnippet type="FMObjectList">
-  <Script includeInMenu="False" runFullAccess="False" id="1" name="FM Script Paste spike (XMSC)">
+  <Script includeInMenu="False" runFullAccess="False" id="1" name="fmscript2xml spike (XMSC)">
     <Step enable="True" id="89" name="Comment">
       <Text> Whole script pasted from the XMSC flavor</Text>
     </Step>

@@ -2,7 +2,7 @@
 // Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera.
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
-// Draws the FM Script Paste logo and writes the app icon, the menu bar
+// Draws the fmscript2xml logo and writes the app icon, the menu bar
 // template icon and a README logo. Single source of truth for the artwork.
 //
 //   swift tools/icon/make-icons.swift

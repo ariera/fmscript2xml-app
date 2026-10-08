@@ -22,6 +22,11 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
+            Section(Branding.appName) {
+                LabeledContent("Version", value: "\(Branding.displayVersion) (\(Branding.build))")
+                UpdateStatusView()
+            }
+
             Section("Shortcuts") {
                 KeyboardShortcuts.Recorder("Convert clipboard:", name: .convertClipboard)
                 Toggle("Shortcut to open the inspector", isOn: $inspectorShortcutEnabled)
@@ -100,6 +105,7 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .onAppear { Updates.shared.checkInBackground() }
         .frame(width: 500)
         .fixedSize(horizontal: false, vertical: true)
         .confirmationDialog("Clear the conversion history?", isPresented: $confirmClear) {

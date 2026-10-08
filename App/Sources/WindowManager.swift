@@ -82,6 +82,7 @@ final class WindowManager {
     #endif
 
     func showAbout() {
+        Updates.shared.checkInBackground()
         let window = about ?? makeWindow(title: "About \(Branding.appName)", content: AboutView(),
                                          size: NSHostingController(rootView: AboutView()).view.fittingSize)
         about = window

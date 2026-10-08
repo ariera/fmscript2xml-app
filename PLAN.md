@@ -1,4 +1,4 @@
-# FM Script Paste (fmscript2xml-app) — Development plan
+# fmscript2xml (fmscript2xml-app) — Development plan
 
 A native macOS menu bar app that turns plain-text FileMaker script steps on the
 clipboard into FileMaker script-step objects you can paste straight into the
@@ -64,7 +64,7 @@ Consequences:
 | D12 | **Fully open source, GPL-3.0-or-later**, hosted at `github.com/ariera/fmscript2xml-app` | Copyleft keeps forks open. Compatible with the MIT dependencies (KeyboardShortcuts, Sparkle). Rules out the Mac App Store, which D10 already does. |
 | D13 | **Python implementation is frozen** once Swift reaches parity | One implementation to maintain. |
 | D14 | **Production FileMaker scripts are never committed** | They are EMBO's internal code. They may be used for local testing only (§9). |
-| D15 | **App name: FM Script Paste**; bundle ID `io.github.ariera.fmscriptpaste`; repo stays `ariera/fmscript2xml-app` | Name says what it does. Define the name and bundle ID in one place (`project.yml` / a `Branding` constant). |
+| D15 | **App name: fmscript2xml** (renamed from "FM Script Paste" on 2026-10-08, back to the project's original name); bundle ID `io.github.ariera.fmscriptpaste`; repo stays `ariera/fmscript2xml-app` | Name says what it does. Define the name and bundle ID in one place (`project.yml` / a `Branding` constant). |
 | D16 | **Copyright notice**: "Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera." | Credits the original author; fits a copyleft project open to contributions. Used in source headers and the About window. |
 | D17 | **Tooling**: XcodeGen `project.yml` for the app target (no hand-edited `.xcodeproj`); SwiftPM for `FMScriptKit`, `FMClipboard` and the CLI; Swift 6 language mode with strict concurrency; Swift Testing | Agents and diffs handle text project files well. |
 | D18 | **No telemetry or crash reporting; English only; CLI is a developer/testing tool in v1** | Keeps v1 small and private. |
@@ -449,7 +449,7 @@ Exit: daily use replaces the Automator Quick Action.
   EMBO's Developer ID; no signing secrets in GitHub.
 - Q8 → The Python repo is left as is for now.
 - Q7 → Contributors notice with author credit (D16).
-- App name FM Script Paste (D15); tooling defaults (D17, D18).
+- App name fmscript2xml (D15); tooling defaults (D17, D18).
 - Implementation runs through Phase 3, pushing directly to `main` of a public
   repo (§14).
 
@@ -574,6 +574,17 @@ Exit: daily use replaces the Automator Quick Action.
   its position. On current macOS the line-number ruler overlays the text
   view's clip view, so the text is inset past it. "Open Inspector" selects
   the latest conversion, not a pinned entry at the top of the list.
+- *Update status (2026-10-08):* Settings and About show the version and run
+  Sparkle's silent `checkForUpdateInformation()` when opened; if an update
+  exists they show "Install Update…", which opens Sparkle's standard update
+  window (`checkForUpdates()`). Scheduled checks use Sparkle's gentle
+  reminders, recommended for menu bar apps. Debug builds don't check unless
+  launched with `-FMSPEnableUpdates YES`.
+- *Renamed to fmscript2xml (2026-10-08):* the app, its menus and windows,
+  the README and release/DMG names. Internal identifiers stay (Xcode target
+  `FMScriptPaste`, Swift module `FMScriptPasteApp`, `FMSP*` debug flags),
+  because an Xcode scheme named fmscript2xml would collide with the
+  package's CLI target of that name.
 - *Debug-only hooks* (not in Release builds): snapshot the inspector to a
   PNG, and run "fix"/"copy" in the inspector, from scripts. Used to verify
   layouts and flows without screen-recording permission.
@@ -625,7 +636,7 @@ for this run.
 - Phase 1 exit: all public fixtures pass in CI; all 885 private fixtures pass
   locally; differential run against Python shows no semantic differences.
 - Phase 2 exit: complete source maps for every fixture; suggestions tested.
-- Phase 3 exit: FM Script Paste runs from the menu bar, ⌃⌥⌘F converts the
+- Phase 3 exit: fmscript2xml runs from the menu bar, ⌃⌥⌘F converts the
   clipboard, failures notify with the error and leave the clipboard alone,
   Settings work. Report what was verified, what Alejandro still needs to try
   in FileMaker, and any deviations from this plan.

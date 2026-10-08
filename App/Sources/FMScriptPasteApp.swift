@@ -155,6 +155,8 @@ struct MenuContent: View {
         Button("Settings…") {
             NSApp.activate()
             openSettings()
+            // The Settings window is reused, so check here as well as on appear
+            Updates.shared.checkInBackground()
         }
         .keyboardShortcut(",")
         if Updates.shared.isAvailable {

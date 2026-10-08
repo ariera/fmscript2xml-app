@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <fmxmlsnippet type="FMObjectList">
   <Step enable="True" id="89" name="Comment">
-    <Text> FM Script Paste spike: these three steps came from the XMSS flavor</Text>
+    <Text> fmscript2xml spike: these three steps came from the XMSS flavor</Text>
   </Step>
   <Step enable="True" id="141" name="Set Variable">
     <Name>$spike</Name>

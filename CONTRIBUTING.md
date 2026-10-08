@@ -1,4 +1,4 @@
-# Contributing to FM Script Paste
+# Contributing to fmscript2xml
 
 Thank you for helping. This file explains how the project is organised, how to
 test changes, and the rules every contribution follows.

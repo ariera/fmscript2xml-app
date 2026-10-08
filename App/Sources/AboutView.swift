@@ -18,6 +18,8 @@ struct AboutView: View {
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)
+                UpdateStatusView()
+                    .padding(.top, 4)
             }
             Text(Branding.pitch)
                 .multilineTextAlignment(.center)

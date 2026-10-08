@@ -10,7 +10,7 @@ config="${1:-Debug}"
 xcodegen generate --spec "$root/App/project.yml" --quiet
 xcodebuild -project "$root/App/FMScriptPaste.xcodeproj" -scheme FMScriptPaste \
   -configuration "$config" -derivedDataPath "$root/build/DerivedData" build -quiet
-app="$root/build/DerivedData/Build/Products/$config/FM Script Paste.app"
+app="$root/build/DerivedData/Build/Products/$config/fmscript2xml.app"
 echo "Built: $app"
 [ "${2:-}" = "--open" ] && open "$app"
 exit 0
