@@ -558,6 +558,13 @@ Exit: daily use replaces the Automator Quick Action.
   key). Caveat: with ad-hoc signing, macOS may ask again for the
   Accessibility permission (auto-paste only) after an update. D10 still
   applies once the certificate exists.
+- *0.1 and 0.2 betas didn't launch (2026-10-08):* with the hardened runtime
+  on, library validation requires frameworks from the app's Team ID; an
+  ad-hoc app has none, so dyld refused Sparkle.framework and killed the app
+  at launch, with no visible error. Ad-hoc builds now run without the
+  hardened runtime (notarised builds keep it), and `tools/release.sh`
+  launches every build with `-FMSPSmokeTest YES` and aborts unless it
+  starts and quits cleanly.
 - *About window* is a custom window sized to its text (the standard About
   panel's credits area scrolls).
 - *Inspector layout (2026-10-08, found while taking README screenshots):*

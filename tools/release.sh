@@ -100,7 +100,10 @@ rm -rf "$out"
 mkdir -p "$out"
 xcodegen generate --spec App/project.yml --quiet
 sign_settings=(CODE_SIGN_STYLE=Manual "CODE_SIGN_IDENTITY=$identity" "DEVELOPMENT_TEAM=$team" "OTHER_CODE_SIGN_FLAGS=--timestamp")
-[ "$mode" != "signed" ] && sign_settings=(CODE_SIGN_STYLE=Manual "CODE_SIGN_IDENTITY=-" DEVELOPMENT_TEAM=)
+# Ad-hoc builds have no Team ID. With the hardened runtime on, library
+# validation then refuses Sparkle.framework (signed by Sparkle's team) and
+# the app is killed at launch, so ad-hoc builds run without it.
+[ "$mode" != "signed" ] && sign_settings=(CODE_SIGN_STYLE=Manual "CODE_SIGN_IDENTITY=-" DEVELOPMENT_TEAM= ENABLE_HARDENED_RUNTIME=NO)
 xcodebuild archive -quiet \
   -project App/FMScriptPaste.xcodeproj -scheme FMScriptPaste -configuration Release \
   -archivePath "$out/FMScriptPaste.xcarchive" -derivedDataPath "$out/DerivedData" \
@@ -128,6 +131,18 @@ PLIST
 fi
 app="$out/export/$app_name.app"
 codesign --verify --deep --strict "$app"
+
+# Smoke test: the app must launch (frameworks load) and quit cleanly
+step "Smoke test"
+"$app/Contents/MacOS/$app_name" -FMSPSmokeTest YES >"$out/smoke.log" 2>&1 &
+smoke_pid=$!
+for _ in $(seq 1 30); do kill -0 "$smoke_pid" 2>/dev/null || break; sleep 1; done
+if kill -0 "$smoke_pid" 2>/dev/null; then
+  kill "$smoke_pid"; echo "error: the app didn't quit after the smoke test" >&2; exit 1
+fi
+wait "$smoke_pid" || { echo "error: the app failed to launch:" >&2; cat "$out/smoke.log" >&2; exit 1; }
+grep -q "smoke test: ok" "$out/smoke.log" || { echo "error: no smoke test confirmation" >&2; cat "$out/smoke.log" >&2; exit 1; }
+echo "launches and quits cleanly"
 plist="$app/Contents/Info.plist"
 echo "Built $(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist") ($(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$plist"))"
 

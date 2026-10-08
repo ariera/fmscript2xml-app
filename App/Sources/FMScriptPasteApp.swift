@@ -29,6 +29,12 @@ struct FMScriptPasteApp: App {
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // tools/release.sh launches the built app with -FMSPSmokeTest YES to
+        // check that it starts (all frameworks load), then expects it to quit.
+        if UserDefaults.standard.bool(forKey: "FMSPSmokeTest") {
+            FileHandle.standardOutput.write(Data("smoke test: ok \(Branding.displayVersion) (\(Branding.build))\n".utf8))
+            exit(0)
+        }
         DockIcon.apply(show: AppSettings.showInDock)
         KeyboardShortcuts.onKeyUp(for: .convertClipboard) {
             Task { @MainActor in AppModel.shared.convertClipboard() }
