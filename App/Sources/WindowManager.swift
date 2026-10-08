@@ -14,6 +14,7 @@ final class WindowManager {
 
     private var welcome: NSWindow?
     private var inspector: NSWindow?
+    private var about: NSWindow?
 
     func showWelcome() {
         let window = welcome ?? makeWindow(
@@ -47,6 +48,18 @@ final class WindowManager {
     }
 
     #if DEBUG
+    func snapshotAbout(to url: URL) {
+        showAbout()
+        guard let window = about else { return }
+        Task {
+            try? await Task.sleep(for: .milliseconds(500))
+            if let image = CGWindowListCreateImage(.null, .optionIncludingWindow, CGWindowID(window.windowNumber), [.boundsIgnoreFraming]) {
+                try? NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])?.write(to: url)
+                debugLog("about snapshot: \(url.path)")
+            }
+        }
+    }
+
     /// Opens the inspector, optionally resizes it, and writes its contents to a PNG.
     func snapshotInspector(to url: URL, size: NSSize = NSSize(width: 1600, height: 900)) {
         showInspector()
@@ -69,31 +82,10 @@ final class WindowManager {
     #endif
 
     func showAbout() {
-        NSApp.activate()
-        NSApp.orderFrontStandardAboutPanel(options: [
-            .applicationName: Branding.appName,
-            .credits: NSAttributedString(
-                attributedString: aboutCredits()
-            ),
-        ])
-    }
-
-    private func aboutCredits() -> NSAttributedString {
-        let body: [NSAttributedString.Key: Any] = [.font: NSFont.systemFont(ofSize: 11), .foregroundColor: NSColor.secondaryLabelColor]
-        let credits = NSMutableAttributedString(string: "\(Branding.pitch)\n\n", attributes: [
-            .font: NSFont.systemFont(ofSize: 11), .foregroundColor: NSColor.labelColor,
-        ])
-        credits.append(NSAttributedString(string: "Converter \(FMScriptKit.version)\n\(Branding.copyright)\nLicensed under ", attributes: body))
-        var link = body
-        link[.link] = Branding.licenseURL
-        credits.append(NSAttributedString(string: Branding.license, attributes: link))
-        credits.append(NSAttributedString(string: ".\n", attributes: body))
-        link[.link] = Branding.repositoryURL
-        credits.append(NSAttributedString(string: Branding.repositoryURL.absoluteString.replacingOccurrences(of: "https://", with: ""), attributes: link))
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = .center
-        credits.addAttribute(.paragraphStyle, value: paragraph, range: NSRange(location: 0, length: credits.length))
-        return credits
+        let window = about ?? makeWindow(title: "About \(Branding.appName)", content: AboutView(),
+                                         size: NSHostingController(rootView: AboutView()).view.fittingSize)
+        about = window
+        present(window)
     }
 
     private func makeWindow(title: String, content: some View, size: NSSize, resizable: Bool = false) -> NSWindow {

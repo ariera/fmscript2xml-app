@@ -62,6 +62,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Task { @MainActor in InspectorModel.shared.debugCommand(command) }
         }
         DistributedNotificationCenter.default().addObserver(
+            forName: Notification.Name("\(Branding.bundleIdentifier).debug.snapshotAbout"), object: nil, queue: .main
+        ) { note in
+            let path = note.object as? String ?? NSTemporaryDirectory() + "about.png"
+            Task { @MainActor in WindowManager.shared.snapshotAbout(to: URL(filePath: path)) }
+        }
+        DistributedNotificationCenter.default().addObserver(
             forName: Notification.Name("\(Branding.bundleIdentifier).debug.snapshotSettings"), object: nil, queue: .main
         ) { note in
             let path = note.object as? String ?? NSTemporaryDirectory() + "settings.png"

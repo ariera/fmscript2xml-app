@@ -16,11 +16,17 @@ fraction of a second.
 Requires macOS 14 (Sonoma) or later. FileMaker Pro doesn't need to be
 installed for the conversion.
 
-1. Download the latest `FM-Script-Paste-x.y.z.dmg` from
+FM Script Paste is in **beta** for all 0.x versions.
+
+1. Download the latest DMG from
    [Releases](https://github.com/ariera/fmscript2xml-app/releases).
-   No release has been published yet; until then, build it from source (below).
 2. Drag **FM Script Paste** to Applications and open it.
-3. The welcome window shows the shortcut and offers to launch the app at login.
+3. Beta builds aren't notarised by Apple yet, so macOS blocks the first
+   launch. Click **Done**, open **System Settings → Privacy & Security**,
+   click **Open Anyway** next to "FM Script Paste was blocked", and confirm.
+   You only do this once. (Or run
+   `xattr -dr com.apple.quarantine "/Applications/FM Script Paste.app"`.)
+4. The welcome window shows the shortcut and offers to launch the app at login.
    Allow notifications: failures are reported that way.
 
 The app lives in the menu bar. Updates are offered automatically (Sparkle).
@@ -108,7 +114,7 @@ Requires macOS 14+, Xcode 16+ and [XcodeGen](https://github.com/yonaskolb/XcodeG
 ```sh
 swift test                      # converter tests (public fixtures)
 tools/build-app.sh Debug --open # build and run the menu bar app
-tools/release.sh 1.0.0 --dry-run  # release build and DMG, unsigned
+tools/release.sh 0.1 --dry-run  # release build and DMG, unsigned
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the project layout, tests and

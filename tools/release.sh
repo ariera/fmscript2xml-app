@@ -5,11 +5,20 @@
 # Builds, signs, notarises and publishes a release (PLAN §10, Phase 6).
 # Runs locally on the maintainer's Mac: signing secrets never go to GitHub.
 #
-#   tools/release.sh <version> [--dry-run]
+#   tools/release.sh <version> [--ad-hoc | --dry-run]
 #
-# --dry-run builds an ad-hoc signed app and DMG in build/release/ and stops
-# (no Developer ID, notarisation, appcast or upload). Use it to check the
-# pipeline on any Mac.
+# <version> is x.y or x.y.z. Every 0.x release is a beta: 0.1 is published
+# as "FM Script Paste 0.1 beta" (tag v0.1.0). The GitHub pre-release flag is
+# not used, because releases/latest (download links and the Sparkle feed)
+# skips pre-releases.
+#
+# Modes:
+#   (default)  Developer ID signed and notarised. Needs the setup below.
+#   --ad-hoc   Ad-hoc signed, not notarised, published. No Apple Developer
+#              account needed, but macOS blocks the first launch: users
+#              click "Open Anyway" in System Settings → Privacy & Security
+#              once (the release notes explain it).
+#   --dry-run  Ad-hoc build and DMG in build/release/, nothing published.
 #
 # One-time setup on the release Mac:
 #   1. "Developer ID Application" certificate for EMBO's team in the login
@@ -20,18 +29,35 @@
 #   3. Sparkle EdDSA key: run Sparkle's generate_keys once (it stores the
 #      private key in the keychain and prints the public key), and put the
 #      public key in SPARKLE_PUBLIC_ED_KEY in App/project.yml.
+# Steps 1 and 2 aren't needed for --ad-hoc. Without step 3 an --ad-hoc
+# release has no update feed (the app won't offer updates).
 #
 # Environment:
 #   FMSP_TEAM_ID          Apple Developer team ID (required unless --dry-run)
 #   FMSP_NOTARY_PROFILE   notarytool keychain profile (default: fmscriptpaste-notary)
 set -euo pipefail
 
-usage() { echo "usage: $0 <version, e.g. 1.0.0> [--dry-run]" >&2; exit 2; }
+usage() { echo "usage: $0 <version, e.g. 0.1 or 1.2.3> [--ad-hoc | --dry-run]" >&2; exit 2; }
 [ $# -ge 1 ] || usage
 version="$1"
+mode="signed"
+case "${2:-}" in
+  "") ;;
+  --ad-hoc) mode="adhoc" ;;
+  --dry-run) mode="dry" ;;
+  *) usage ;;
+esac
+[[ "$version" =~ ^[0-9]+\.[0-9]+$ ]] && version="$version.0"
+[[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "error: version must look like 0.1 or 1.2.3" >&2; exit 2; }
+IFS=. read -r major minor patch <<< "$version"
+# What people see: every 0.x is a beta
+if [ "$major" = "0" ]; then
+  if [ "$patch" = "0" ]; then display="0.$minor beta"; else display="0.$minor.$patch beta"; fi
+else
+  display="$version"
+fi
 dry=0
-[ "${2:-}" = "--dry-run" ] && dry=1
-[[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "error: version must look like 1.2.3" >&2; exit 2; }
+[ "$mode" = "dry" ] && dry=1
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 out="$root/build/release"
@@ -46,17 +72,24 @@ identity="Developer ID Application"
 step() { printf '\n==> %s\n' "$*"; }
 
 # --- Checks -----------------------------------------------------------------
-step "Checks"
+step "Checks: $app_name $display ($mode)"
 cd "$root"
+has_sparkle_key=0
+grep -Eq 'SPARKLE_PUBLIC_ED_KEY: "[^"]+"' App/project.yml && has_sparkle_key=1
 if [ $dry -eq 0 ]; then
-  [ -n "$team" ] || { echo "error: set FMSP_TEAM_ID" >&2; exit 1; }
   [ -z "$(git status --porcelain)" ] || { echo "error: the working tree has changes" >&2; exit 1; }
   [ "$(git rev-parse --abbrev-ref HEAD)" = "main" ] || { echo "error: release from main" >&2; exit 1; }
   ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null || { echo "error: tag $tag exists" >&2; exit 1; }
+fi
+if [ "$mode" = "signed" ]; then
+  [ -n "$team" ] || { echo "error: set FMSP_TEAM_ID" >&2; exit 1; }
   security find-identity -v -p codesigning | grep -q "$identity" \
-    || { echo "error: no '$identity' certificate in the keychain" >&2; exit 1; }
-  grep -Eq 'SPARKLE_PUBLIC_ED_KEY: "[^"]+"' App/project.yml \
+    || { echo "error: no '$identity' certificate in the keychain (use --ad-hoc to release without one)" >&2; exit 1; }
+  [ $has_sparkle_key -eq 1 ] \
     || { echo "error: SPARKLE_PUBLIC_ED_KEY is empty in App/project.yml (updates would be off)" >&2; exit 1; }
+fi
+if [ "$mode" = "adhoc" ] && [ $has_sparkle_key -eq 0 ]; then
+  echo "warning: SPARKLE_PUBLIC_ED_KEY is empty: this release won't offer updates" >&2
 fi
 tools/check-fixtures.sh --tracked
 swift test --quiet
@@ -67,14 +100,14 @@ rm -rf "$out"
 mkdir -p "$out"
 xcodegen generate --spec App/project.yml --quiet
 sign_settings=(CODE_SIGN_STYLE=Manual "CODE_SIGN_IDENTITY=$identity" "DEVELOPMENT_TEAM=$team" "OTHER_CODE_SIGN_FLAGS=--timestamp")
-[ $dry -eq 1 ] && sign_settings=(CODE_SIGN_STYLE=Manual "CODE_SIGN_IDENTITY=-" DEVELOPMENT_TEAM=)
+[ "$mode" != "signed" ] && sign_settings=(CODE_SIGN_STYLE=Manual "CODE_SIGN_IDENTITY=-" DEVELOPMENT_TEAM=)
 xcodebuild archive -quiet \
   -project App/FMScriptPaste.xcodeproj -scheme FMScriptPaste -configuration Release \
   -archivePath "$out/FMScriptPaste.xcarchive" -derivedDataPath "$out/DerivedData" \
   MARKETING_VERSION="$version" CURRENT_PROJECT_VERSION="$build_number" "${sign_settings[@]}"
 
 step "Export"
-if [ $dry -eq 1 ]; then
+if [ "$mode" != "signed" ]; then
   mkdir -p "$out/export"
   ditto "$out/FMScriptPaste.xcarchive/Products/Applications/$app_name.app" "$out/export/$app_name.app"
 else
@@ -100,12 +133,12 @@ echo "Built $(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$p
 
 # --- DMG --------------------------------------------------------------------
 step "DMG"
-dmg="$out/FM-Script-Paste-$version.dmg"
+dmg="$out/FM-Script-Paste-${display// /-}.dmg"
 staging="$out/dmg"
 mkdir -p "$staging"
 ditto "$app" "$staging/$app_name.app"
 ln -s /Applications "$staging/Applications"
-hdiutil create -quiet -volname "$app_name $version" -srcfolder "$staging" -fs HFS+ -format UDZO -ov "$dmg"
+hdiutil create -quiet -volname "$app_name $display" -srcfolder "$staging" -fs HFS+ -format UDZO -ov "$dmg"
 echo "$dmg"
 
 if [ $dry -eq 1 ]; then
@@ -113,27 +146,56 @@ if [ $dry -eq 1 ]; then
   exit 0
 fi
 
-codesign --sign "$identity" --timestamp "$dmg"
+if [ "$mode" = "signed" ]; then
+  codesign --sign "$identity" --timestamp "$dmg"
 
-# --- Notarise ----------------------------------------------------------------
-step "Notarise"
-xcrun notarytool submit "$dmg" --keychain-profile "$notary_profile" --wait
-xcrun stapler staple "$dmg"
-spctl --assess --type open --context context:primary-signature -vv "$dmg"
+  # --- Notarise --------------------------------------------------------------
+  step "Notarise"
+  xcrun notarytool submit "$dmg" --keychain-profile "$notary_profile" --wait
+  xcrun stapler staple "$dmg"
+  spctl --assess --type open --context context:primary-signature -vv "$dmg"
+fi
 
 # --- Appcast -------------------------------------------------------------------
-step "Sparkle appcast"
-generate_appcast="$(find "$out/DerivedData/SourcePackages/artifacts" -path '*Sparkle/bin/generate_appcast' -type f | head -1)"
-[ -x "$generate_appcast" ] || { echo "error: generate_appcast not found" >&2; exit 1; }
-mkdir -p "$out/updates"
-cp "$dmg" "$out/updates/"
-"$generate_appcast" --download-url-prefix "https://github.com/$repo/releases/download/$tag/" \
-  --link "https://github.com/$repo" -o "$out/appcast.xml" "$out/updates"
+assets=("$dmg")
+if [ $has_sparkle_key -eq 1 ]; then
+  step "Sparkle appcast"
+  generate_appcast="$(find "$out/DerivedData/SourcePackages/artifacts" -path '*Sparkle/bin/generate_appcast' -type f | head -1)"
+  [ -x "$generate_appcast" ] || { echo "error: generate_appcast not found" >&2; exit 1; }
+  mkdir -p "$out/updates"
+  cp "$dmg" "$out/updates/"
+  "$generate_appcast" --download-url-prefix "https://github.com/$repo/releases/download/$tag/" \
+    --link "https://github.com/$repo" -o "$out/appcast.xml" "$out/updates"
+  assets+=("$out/appcast.xml")
+fi
+
+# --- Release notes ------------------------------------------------------------
+notes="$out/notes.md"
+{
+  [ "$major" = "0" ] && printf '**Beta.** %s is in beta for all 0.x versions.\n\n' "$app_name"
+  if [ "$mode" = "adhoc" ]; then
+    cat <<'NOTES'
+### Installing
+
+This build isn't notarised by Apple, so macOS blocks it the first time:
+
+1. Open the DMG and drag **FM Script Paste** to Applications.
+2. Open it. macOS says it can't verify the developer. Click **Done**.
+3. Open **System Settings → Privacy & Security**, scroll down, click
+   **Open Anyway** next to "FM Script Paste was blocked", and confirm.
+
+You only do this once. Alternatively, in Terminal:
+`xattr -dr com.apple.quarantine "/Applications/FM Script Paste.app"`
+
+NOTES
+  fi
+  printf 'Requires macOS 14 or later.\n'
+} > "$notes"
 
 # --- Publish -----------------------------------------------------------------
-step "GitHub Release $tag"
-git tag -a "$tag" -m "$app_name $version"
+step "GitHub Release $tag: $app_name $display"
+git tag -a "$tag" -m "$app_name $display"
 git push origin "$tag"
-gh release create "$tag" "$dmg" "$out/appcast.xml" --repo "$repo" \
-  --title "$app_name $version" --generate-notes
+gh release create "$tag" "${assets[@]}" --repo "$repo" \
+  --title "$app_name $display" --notes-file "$notes" --generate-notes
 step "Released $tag"

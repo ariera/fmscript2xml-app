@@ -543,6 +543,23 @@ Exit: daily use replaces the Automator Quick Action.
   entry to the top of the unpinned ones, so it isn't dropped at once.
 - *Open-inspector shortcut* (requested 2026-10-08): off by default; turning it
   on in Settings uses ⌃⌥⇧⌘F unless another shortcut is recorded.
+- *Versions and beta (2026-10-08):* the first release is "0.1 beta", and
+  every 0.x release is a beta. The bundle version stays numeric (0.1.0, for
+  macOS and Sparkle); the app and the release title show "0.1 beta". The
+  GitHub pre-release flag isn't used, because `releases/latest` (download
+  links, the Sparkle feed) skips pre-releases.
+- *Releasing without EMBO's Developer ID (2026-10-08):* there is no way to
+  avoid Gatekeeper's first-launch block without notarisation, which needs a
+  paid Apple Developer Program membership (self-signed or free-account
+  certificates are treated like unsigned apps). Until EMBO's certificate is
+  available, betas are published with `tools/release.sh <version> --ad-hoc`:
+  ad-hoc signed, not notarised, with release notes explaining "Open Anyway".
+  Sparkle updates still work (they are verified with Sparkle's own EdDSA
+  key). Caveat: with ad-hoc signing, macOS may ask again for the
+  Accessibility permission (auto-paste only) after an update. D10 still
+  applies once the certificate exists.
+- *About window* is a custom window sized to its text (the standard About
+  panel's credits area scrolls).
 - *Debug-only hooks* (not in Release builds): snapshot the inspector to a
   PNG, and run "fix"/"copy" in the inspector, from scripts. Used to verify
   layouts and flows without screen-recording permission.
