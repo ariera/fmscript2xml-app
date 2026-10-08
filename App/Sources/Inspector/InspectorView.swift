@@ -69,8 +69,18 @@ private struct Sidebar: View {
                         }
                     }
                 }
+                let pinned = model.filteredEntries.filter(\.isPinned)
+                if !pinned.isEmpty {
+                    Section("Pinned") {
+                        ForEach(pinned) { entry in
+                            EntryRow(entry: entry)
+                                .tag(InspectorModel.Item.entry(entry.id))
+                                .contextMenu { EntryActions(entry: entry, model: model) }
+                        }
+                    }
+                }
                 Section(history.capacity == 0 ? "History (off in Settings)" : "History") {
-                    ForEach(model.filteredEntries) { entry in
+                    ForEach(model.filteredEntries.filter { !$0.isPinned }) { entry in
                         EntryRow(entry: entry)
                             .tag(InspectorModel.Item.entry(entry.id))
                             .contextMenu { EntryActions(entry: entry, model: model) }
@@ -81,14 +91,15 @@ private struct Sidebar: View {
 
             Divider()
             HStack {
-                Text("\(history.entries.count) of \(history.capacity)")
+                Text("\(history.unpinnedEntries.count) of \(history.capacity)"
+                     + (history.pinnedEntries.isEmpty ? "" : " · \(history.pinnedEntries.count) pinned"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
                 Button("Clear History…") { confirmClear = true }
                     .buttonStyle(.borderless)
                     .font(.caption)
-                    .disabled(history.entries.isEmpty)
+                    .disabled(history.unpinnedEntries.isEmpty)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
@@ -96,7 +107,9 @@ private struct Sidebar: View {
         .confirmationDialog("Clear the conversion history?", isPresented: $confirmClear) {
             Button("Clear History", role: .destructive) { model.clearHistory() }
         } message: {
-            Text("This removes all \(history.entries.count) entries.")
+            Text(history.pinnedEntries.isEmpty
+                 ? "This removes all \(history.unpinnedEntries.count) entries."
+                 : "This removes \(history.unpinnedEntries.count) entries. Pinned entries are kept.")
         }
     }
 }
@@ -111,9 +124,15 @@ private struct EntryRow: View {
                 .frame(width: 8, height: 8)
                 .padding(.top, 5)
             VStack(alignment: .leading, spacing: 2) {
-                Text(entry.shortTitle(maxLength: 60))
-                    .font(.system(.body, design: .monospaced))
-                    .lineLimit(1)
+                HStack(spacing: 4) {
+                    Text(entry.shortTitle(maxLength: 60))
+                        .font(.system(.body, design: .monospaced))
+                        .lineLimit(1)
+                    if entry.isPinned {
+                        Spacer(minLength: 0)
+                        Image(systemName: "pin.fill").font(.caption2).foregroundStyle(.secondary)
+                    }
+                }
                 Text([
                     entry.date.formatted(.relative(presentation: .named)),
                     entry.origin == .inspector ? "inspector" : entry.sourceApp?.name,
@@ -139,6 +158,7 @@ private struct EntryActions: View {
             .disabled(entry.xml == nil)
         Button("Copy Original Text") { app.copyText(entry.input, feedback: "Original text copied") }
         Divider()
+        Button(entry.isPinned ? "Unpin" : "Pin") { model.setPinned(!entry.isPinned, id: entry.id) }
         Button("Reconvert") { model.reconvertEntry(entry.id) }
         Button("Delete", role: .destructive) { model.delete(.entry(entry.id)) }
     }
@@ -212,7 +232,8 @@ private struct DetailView: View {
                 Button("Copy XML") { AppModel.shared.copyText(result.previewXML, feedback: "XML copied as text") }
                 Button("Copy Text") { AppModel.shared.copyText(draft.text, feedback: "Text copied") }
                 Divider()
-                if case .entry(let id) = item {
+                if case .entry(let id) = item, let entry {
+                    Button(entry.isPinned ? "Unpin" : "Pin") { model.setPinned(!entry.isPinned, id: id) }
                     Button("Reconvert with Converter \(FMScriptKit.version)") { model.reconvertEntry(id) }
                 }
                 if draft.isEdited, case .entry = item {
@@ -233,6 +254,7 @@ private struct DetailView: View {
     private var headerDetails: String {
         var parts: [String] = []
         if let entry {
+            if entry.isPinned { parts.append("pinned") }
             if entry.origin == .inspector { parts.append("from the inspector") }
             else if let app = entry.sourceApp { parts.append("from \(app.name)") }
             if entry.converterVersion != FMScriptKit.version { parts.append("converter \(entry.converterVersion)") }

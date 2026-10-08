@@ -8,6 +8,23 @@ import KeyboardShortcuts
 extension KeyboardShortcuts.Name {
     /// Convert the clipboard; default ⌃⌥⌘F.
     static let convertClipboard = Self("convertClipboard", default: .init(.f, modifiers: [.control, .option, .command]))
-    /// Open the inspector; no default.
+    /// Open the inspector. Off by default; turning it on in Settings uses
+    /// ⌃⌥⇧⌘F unless another shortcut is recorded.
     static let openInspector = Self("openInspector")
+}
+
+@MainActor
+enum InspectorShortcut {
+    static let defaultShortcut = KeyboardShortcuts.Shortcut(.f, modifiers: [.control, .option, .shift, .command])
+
+    static func apply(enabled: Bool) {
+        if enabled {
+            if KeyboardShortcuts.getShortcut(for: .openInspector) == nil {
+                KeyboardShortcuts.setShortcut(defaultShortcut, for: .openInspector)
+            }
+            KeyboardShortcuts.enable(.openInspector)
+        } else {
+            KeyboardShortcuts.disable(.openInspector)
+        }
+    }
 }

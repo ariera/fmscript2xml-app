@@ -36,6 +36,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         KeyboardShortcuts.onKeyUp(for: .openInspector) {
             Task { @MainActor in WindowManager.shared.showInspector() }
         }
+        InspectorShortcut.apply(enabled: AppSettings.inspectorShortcutEnabled)
         Notifications.shared.configure()
         Updates.shared.start()
         if !AppSettings.hasCompletedFirstRun {
@@ -106,22 +107,20 @@ struct MenuContent: View {
 
         Divider()
 
+        let pinned = model.history.pinnedEntries.prefix(Self.recentCount)
+        if !pinned.isEmpty {
+            Text("Pinned")
+            ForEach(pinned) { entry in entryButton(entry) }
+        }
         if model.history.capacity > 0 {
-            let recent = model.history.entries.prefix(Self.recentCount)
-            if recent.isEmpty {
+            let recent = model.history.unpinnedEntries.prefix(Self.recentCount)
+            if recent.isEmpty && pinned.isEmpty {
                 Text("No conversions yet")
-            } else {
+            } else if !recent.isEmpty {
                 Text("Recent — click to copy again")
-                ForEach(recent) { entry in
-                    Button {
-                        model.activate(entry)
-                    } label: {
-                        Image(systemName: entry.status.symbol)
-                        Text("\(entry.shortTitle(maxLength: 40))  ·  \(entry.date.formatted(.relative(presentation: .numeric, unitsStyle: .abbreviated)))")
-                    }
-                }
+                ForEach(recent) { entry in entryButton(entry) }
             }
-        } else if let last = model.lastEntry {
+        } else if let last = model.lastEntry, !last.isPinned {
             Button {
                 model.activate(last)
             } label: {
@@ -150,5 +149,14 @@ struct MenuContent: View {
 
         Button("Quit \(Branding.appName)") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
+    }
+
+    private func entryButton(_ entry: HistoryEntry) -> some View {
+        Button {
+            model.activate(entry)
+        } label: {
+            Image(systemName: entry.status.symbol)
+            Text("\(entry.shortTitle(maxLength: 40))  ·  \(entry.date.formatted(.relative(presentation: .numeric, unitsStyle: .abbreviated)))")
+        }
     }
 }

@@ -150,6 +150,10 @@ final class InspectorModel {
         if history.entry(id: stored.id) != nil { selection = .entry(stored.id) }
     }
 
+    func setPinned(_ pinned: Bool, id: UUID) {
+        history.setPinned(pinned, id: id)
+    }
+
     func reconvertEntry(_ id: UUID) {
         history.reconvert(id: id, converter: app.converter, policy: AppSettings.policy)
         forget(.entry(id))
@@ -169,10 +173,11 @@ final class InspectorModel {
         }
     }
 
+    /// Clears the history; pinned entries are kept.
     func clearHistory() {
-        for entry in history.entries { forget(.entry(entry.id)) }
+        for entry in history.unpinnedEntries { forget(.entry(entry.id)) }
         history.clear()
-        if case .entry = selection { selection = nil }
+        if case .entry(let id) = selection, history.entry(id: id) == nil { selection = nil }
     }
 
     /// A new empty draft, not tied to any entry (a playground).
@@ -212,6 +217,8 @@ final class InspectorModel {
             if let s = draft(for: item).result.diagnostics.compactMap(\.suggestion).first { apply(s, to: item) }
         case "copy":
             copyAsSteps(item)
+        case "pin":
+            if case .entry(let id) = item { setPinned(true, id: id) }
         default:
             break
         }

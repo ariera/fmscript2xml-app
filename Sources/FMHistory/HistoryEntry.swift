@@ -38,6 +38,9 @@ public struct HistoryEntry: Sendable, Hashable, Codable, Identifiable {
     public var stepCount: Int
     public var duration: Duration
     public var converterVersion: String
+    /// Pinned entries stay at the top, never expire and don't count toward
+    /// the history limit.
+    public var isPinned: Bool
 
     public init(
         id: UUID = UUID(),
@@ -57,6 +60,28 @@ public struct HistoryEntry: Sendable, Hashable, Codable, Identifiable {
         self.stepCount = result.convertedStepCount
         self.duration = result.duration
         self.converterVersion = Converter.version
+        self.isPinned = false
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, date, sourceApp, origin, input, xml, status, diagnostics, stepCount, duration, converterVersion, isPinned
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(UUID.self, forKey: .id)
+        date = try c.decode(Date.self, forKey: .date)
+        sourceApp = try c.decodeIfPresent(SourceApp.self, forKey: .sourceApp)
+        origin = try c.decode(ConversionOrigin.self, forKey: .origin)
+        input = try c.decode(String.self, forKey: .input)
+        xml = try c.decodeIfPresent(String.self, forKey: .xml)
+        status = try c.decode(ConversionResult.Status.self, forKey: .status)
+        diagnostics = try c.decode([Diagnostic].self, forKey: .diagnostics)
+        stepCount = try c.decode(Int.self, forKey: .stepCount)
+        duration = try c.decode(Duration.self, forKey: .duration)
+        converterVersion = try c.decode(String.self, forKey: .converterVersion)
+        // Added after the first history files were written
+        isPinned = try c.decodeIfPresent(Bool.self, forKey: .isPinned) ?? false
     }
 
     /// Replaces the conversion fields with `result`, keeping id, input and source.

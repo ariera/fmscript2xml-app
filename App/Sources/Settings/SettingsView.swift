@@ -15,6 +15,7 @@ struct SettingsView: View {
     @AppStorage(AppSettings.Key.keepHistory) private var keepHistory = true
     @AppStorage(AppSettings.Key.showInDock) private var showInDock = false
     @AppStorage(AppSettings.Key.autoPaste) private var autoPaste = false
+    @AppStorage(AppSettings.Key.inspectorShortcutEnabled) private var inspectorShortcutEnabled = false
     @State private var confirmClear = false
     @State private var accessibilityTrusted = AutoPaste.isTrusted
     private var history: HistoryStore { AppModel.shared.history }
@@ -23,7 +24,11 @@ struct SettingsView: View {
         Form {
             Section("Shortcuts") {
                 KeyboardShortcuts.Recorder("Convert clipboard:", name: .convertClipboard)
-                KeyboardShortcuts.Recorder("Open inspector:", name: .openInspector)
+                Toggle("Shortcut to open the inspector", isOn: $inspectorShortcutEnabled)
+                    .onChange(of: inspectorShortcutEnabled) { _, on in InspectorShortcut.apply(enabled: on) }
+                if inspectorShortcutEnabled {
+                    KeyboardShortcuts.Recorder("Open inspector:", name: .openInspector)
+                }
             }
 
             Section("Conversion") {
@@ -66,15 +71,16 @@ struct SettingsView: View {
                 Toggle("Keep history after quitting", isOn: $keepHistory)
                     .onChange(of: keepHistory) { _, value in AppModel.shared.setKeepHistory(value) }
                 Text(keepHistory
-                     ? "Saved on this Mac only, in Application Support. Scripts can contain credentials."
-                     : "History is kept in memory and forgotten when the app quits.")
+                     ? "Saved on this Mac only, in Application Support. Scripts can contain credentials. "
+                         + "Pinned entries don't count toward the limit."
+                     : "History is kept in memory and forgotten when the app quits. Pinned entries are still saved.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 if let error = history.lastError {
                     Text(error).font(.caption).foregroundStyle(.red)
                 }
                 Button("Clear History…") { confirmClear = true }
-                    .disabled(history.entries.isEmpty)
+                    .disabled(history.unpinnedEntries.isEmpty)
             }
 
             Section("General") {
@@ -98,6 +104,8 @@ struct SettingsView: View {
         .fixedSize(horizontal: false, vertical: true)
         .confirmationDialog("Clear the conversion history?", isPresented: $confirmClear) {
             Button("Clear History", role: .destructive) { InspectorModel.shared.clearHistory() }
+        } message: {
+            Text("Pinned entries are kept.")
         }
     }
 }

@@ -17,6 +17,7 @@ enum AppSettings {
         static let keepHistory = "keepHistory"
         static let showInDock = "showInDock"
         static let autoPaste = "autoPaste"
+        static let inspectorShortcutEnabled = "inspectorShortcutEnabled"
     }
 
     private static var defaults: UserDefaults { .standard }
@@ -32,6 +33,7 @@ enum AppSettings {
     static var keepHistory: Bool { defaults.object(forKey: Key.keepHistory) as? Bool ?? true }
     static var showInDock: Bool { defaults.bool(forKey: Key.showInDock) }
     static var autoPaste: Bool { defaults.bool(forKey: Key.autoPaste) }
+    static var inspectorShortcutEnabled: Bool { defaults.bool(forKey: Key.inspectorShortcutEnabled) }
 
     static var hasCompletedFirstRun: Bool {
         get { defaults.bool(forKey: Key.hasCompletedFirstRun) }

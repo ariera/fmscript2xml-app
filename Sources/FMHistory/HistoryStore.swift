@@ -7,14 +7,20 @@ import Observation
 
 /// Conversion history (PLAN §5): newest first, bounded, failed runs
 /// included, optionally persisted as JSON.
+///
+/// Pinned entries come first, never expire and don't count toward the
+/// capacity; they are saved even when history isn't kept after quitting.
 @MainActor
 @Observable
 public final class HistoryStore {
     public nonisolated static let defaultCapacity = 20
     public nonisolated static let capacityRange = 0...200
 
-    /// Newest first.
+    /// Pinned entries (most recently pinned first), then the others, newest first.
     public private(set) var entries: [HistoryEntry] = []
+
+    public var pinnedEntries: [HistoryEntry] { entries.filter(\.isPinned) }
+    public var unpinnedEntries: [HistoryEntry] { entries.filter { !$0.isPinned } }
 
     /// Maximum number of entries; 0 disables history.
     public private(set) var capacity: Int
@@ -40,7 +46,11 @@ public final class HistoryStore {
         self.fileURL = fileURL
         self.capacity = min(max(capacity, Self.capacityRange.lowerBound), Self.capacityRange.upperBound)
         self.persists = persists
-        if persists { load() } else { deleteFile() }
+        load()
+        if !persists {
+            entries = entries.filter(\.isPinned)
+            save()
+        }
         trim()
     }
 
@@ -55,18 +65,21 @@ public final class HistoryStore {
 
     public func setPersists(_ value: Bool) {
         persists = value
-        if persists { save() } else { deleteFile() }
+        save()
     }
 
     // MARK: Changes
 
-    /// Adds a conversion. If its input is identical to the newest entry's,
-    /// that entry is refreshed (date, result, source) instead of adding a new
-    /// one. Returns the stored entry, or nil when history is disabled.
+    /// Adds a conversion. If its input is identical to the newest unpinned
+    /// entry's, that entry is refreshed (date, result, source) instead of
+    /// adding a new one. Returns the stored entry, or nil when history is
+    /// disabled.
     @discardableResult
     public func record(_ entry: HistoryEntry) -> HistoryEntry? {
         guard capacity > 0 else { return nil }
-        if var newest = entries.first, newest.input == entry.input {
+        let first = firstUnpinnedIndex
+        if first < entries.count, entries[first].input == entry.input {
+            var newest = entries[first]
             newest.date = entry.date
             newest.sourceApp = entry.sourceApp
             newest.origin = entry.origin
@@ -76,13 +89,30 @@ public final class HistoryStore {
             newest.stepCount = entry.stepCount
             newest.duration = entry.duration
             newest.converterVersion = entry.converterVersion
-            entries[0] = newest
+            entries[first] = newest
         } else {
-            entries.insert(entry, at: 0)
+            var new = entry
+            new.isPinned = false
+            entries.insert(new, at: first)
             trim()
         }
         save()
-        return entries.first
+        return entries[first]
+    }
+
+    /// Pins (to the top of the pinned entries) or unpins (to the top of the
+    /// others) an entry.
+    public func setPinned(_ pinned: Bool, id: UUID) {
+        guard let i = entries.firstIndex(where: { $0.id == id }), entries[i].isPinned != pinned else { return }
+        var entry = entries.remove(at: i)
+        entry.isPinned = pinned
+        entries.insert(entry, at: pinned ? 0 : firstUnpinnedIndex)
+        trim()
+        save()
+    }
+
+    private var firstUnpinnedIndex: Int {
+        entries.firstIndex { !$0.isPinned } ?? entries.count
     }
 
     public func entry(id: UUID) -> HistoryEntry? {
@@ -103,15 +133,22 @@ public final class HistoryStore {
         save()
     }
 
+    /// Removes all entries except pinned ones.
     public func clear() {
-        entries.removeAll()
+        entries.removeAll { !$0.isPinned }
         save()
     }
 
     // MARK: Persistence
 
+    /// Drops the oldest unpinned entries beyond the capacity.
     private func trim() {
-        if entries.count > capacity { entries.removeLast(entries.count - capacity) }
+        var excess = unpinnedEntries.count - capacity
+        guard excess > 0 else { return }
+        for i in entries.indices.reversed() where excess > 0 && !entries[i].isPinned {
+            entries.remove(at: i)
+            excess -= 1
+        }
     }
 
     private struct File: Codable {
@@ -135,13 +172,20 @@ public final class HistoryStore {
         }
     }
 
+    /// Writes all entries, or only the pinned ones when history isn't kept
+    /// after quitting (and deletes the file when there are none).
     private func save() {
-        guard persists, let fileURL else { return }
+        guard let fileURL else { return }
+        let toSave = persists ? entries : pinnedEntries
+        if toSave.isEmpty && !persists {
+            deleteFile()
+            return
+        }
         do {
             try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-            try encoder.encode(File(entries: entries)).write(to: fileURL, options: [.atomic])
+            try encoder.encode(File(entries: toSave)).write(to: fileURL, options: [.atomic])
             // Scripts can contain credentials: owner-only access
             try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: fileURL.path)
             lastError = nil

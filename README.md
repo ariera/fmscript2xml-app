@@ -45,9 +45,12 @@ one. Click **Open Inspector** to fix it.
 
 **History.** The menu bar lists the last conversions (failed ones included).
 Click one to copy its steps again. The number kept is set in Settings
-(default 20, 0 turns history off).
+(default 20, 0 turns history off). Pin the ones you reuse (right-click in the
+inspector → Pin): pinned entries stay at the top, never expire and don't count
+toward the limit.
 
-**Inspector.** Menu bar → Inspector. It shows the history on the left, and for
+**Inspector.** Menu bar → Inspector, or a shortcut you can turn on in Settings
+(⌃⌥⇧⌘F by default). It shows the history on the left, and for
 each conversion the input next to the XML it produced. Hover or select input
 lines to see the XML steps they became, and the reverse. The input is
 editable and reconverts as you type. Problems have **Fix** buttons. The Steps
@@ -55,7 +58,7 @@ tab shows what the parser read for each step. **Copy as Steps** copies an
 edited version and saves it as a new history entry. **New Draft** gives an
 empty playground.
 
-**Settings.** Shortcuts (convert, open inspector), what to do on errors (leave
+**Settings.** Shortcuts (convert; open the inspector, off by default), what to do on errors (leave
 the clipboard unchanged, or copy what converted), HUD and sound, paste
 automatically after converting, history length and whether to keep it after
 quitting, launch at login, show in Dock, and the installed FileMaker versions.

@@ -104,6 +104,76 @@ import Testing
         #expect(store.entries.isEmpty)
     }
 
+    @Test func pinnedEntriesStayOnTopAndDontCount() {
+        let store = HistoryStore(fileURL: nil, capacity: 2)
+        let keep = store.record(entry("# keep me"))!
+        store.setPinned(true, id: keep.id)
+        for i in 1...5 { store.record(entry("# \(i)")) }
+        #expect(store.entries.map(\.title) == ["# keep me", "# 5", "# 4"])
+        #expect(store.unpinnedEntries.count == 2)
+        store.setCapacity(0)
+        #expect(store.entries.map(\.title) == ["# keep me"])
+        #expect(store.record(entry("# 6")) == nil)
+    }
+
+    @Test func pinningOrderAndUnpinning() {
+        let store = HistoryStore(fileURL: nil, capacity: 3)
+        let a = store.record(entry("# a"))!
+        let b = store.record(entry("# b"))!
+        store.record(entry("# c"))
+        store.setPinned(true, id: a.id)
+        store.setPinned(true, id: b.id)
+        #expect(store.entries.map(\.title) == ["# b", "# a", "# c"])  // most recently pinned first
+        store.setPinned(false, id: a.id)
+        #expect(store.entries.map(\.title) == ["# b", "# a", "# c"])  // top of the unpinned ones
+        #expect(store.pinnedEntries.map(\.title) == ["# b"])
+    }
+
+    @Test func dedupeIgnoresPinnedEntries() {
+        let store = HistoryStore(fileURL: nil)
+        let a = store.record(entry("Beep"))!
+        store.setPinned(true, id: a.id)
+        store.record(entry("Beep"))
+        #expect(store.entries.count == 2)
+        store.record(entry("Beep"))
+        #expect(store.entries.count == 2)
+    }
+
+    @Test func clearKeepsPinned() {
+        let store = HistoryStore(fileURL: nil)
+        let a = store.record(entry("# a"))!
+        store.record(entry("# b"))
+        store.setPinned(true, id: a.id)
+        store.clear()
+        #expect(store.entries.map(\.title) == ["# a"])
+        store.delete(id: a.id)
+        #expect(store.entries.isEmpty)
+    }
+
+    @Test func pinnedEntriesAreSavedEvenWithoutKeepingHistory() {
+        let url = tempFile()
+        let store = HistoryStore(fileURL: url, persists: false)
+        let a = store.record(entry("# pinned"))!
+        store.record(entry("# not pinned"))
+        #expect(!FileManager.default.fileExists(atPath: url.path))
+        store.setPinned(true, id: a.id)
+        #expect(HistoryStore(fileURL: url, persists: false).entries.map(\.title) == ["# pinned"])
+        store.setPinned(false, id: a.id)
+        #expect(!FileManager.default.fileExists(atPath: url.path))
+    }
+
+    @Test func filesWithoutPinFlagStillLoad() throws {
+        let url = tempFile()
+        let store = HistoryStore(fileURL: url)
+        store.record(entry("Beep"))
+        var json = try String(contentsOf: url, encoding: .utf8)
+        json = json.replacingOccurrences(of: #""isPinned" : false,"#, with: "")
+        try json.write(to: url, atomically: true, encoding: .utf8)
+        let reloaded = HistoryStore(fileURL: url)
+        #expect(reloaded.entries.count == 1)
+        #expect(reloaded.lastError == nil)
+    }
+
     @Test func titles() {
         #expect(entry("\n\n   Set Variable [ $x ; Value: 1 ]\nBeep").title == "Set Variable [ $x ; Value: 1 ]")
         #expect(entry(String(repeating: "x", count: 80)).shortTitle(maxLength: 10).count == 10)

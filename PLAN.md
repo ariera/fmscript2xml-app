@@ -243,7 +243,7 @@ notification.
 | Setting | Default | Notes |
 |---|---|---|
 | Convert shortcut | ⌃⌥⌘F | KeyboardShortcuts recorder |
-| Open inspector shortcut | none | Optional second shortcut |
+| Open inspector shortcut | off | When turned on: ⌃⌥⇧⌘F, configurable |
 | History length | 20 | 0–200; 0 disables |
 | Keep history after quitting | on | |
 | On errors | Leave clipboard unchanged | Alternative: copy what converted |
@@ -535,6 +535,14 @@ Exit: daily use replaces the Automator Quick Action.
   `appcast.xml`. The feed URL is
   `…/releases/latest/download/appcast.xml`, so each release replaces the
   feed. Sizes: app 5.8 MB, DMG 2.6 MB.
+- *Pinned history entries* (requested 2026-10-08): they stay at the top
+  (most recently pinned first), never expire, don't count toward the
+  capacity, survive "Clear History", and are saved even when history isn't
+  kept after quitting (pinning is an explicit choice to keep). Identical-input
+  de-duplication only looks at the newest unpinned entry. Unpinning moves an
+  entry to the top of the unpinned ones, so it isn't dropped at once.
+- *Open-inspector shortcut* (requested 2026-10-08): off by default; turning it
+  on in Settings uses ⌃⌥⇧⌘F unless another shortcut is recorded.
 - *Debug-only hooks* (not in Release builds): snapshot the inspector to a
   PNG, and run "fix"/"copy" in the inspector, from scripts. Used to verify
   layouts and flows without screen-recording permission.
