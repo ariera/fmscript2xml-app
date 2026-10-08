@@ -82,16 +82,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         DistributedNotificationCenter.default().addObserver(
             forName: debugName("snapshotSettings"), object: nil, queue: .main
         ) { note in
-            let path = note.object as? String ?? NSTemporaryDirectory() + "settings.png"
+            // object: "<png path>|<tab>"
+            let parts = (note.object as? String ?? "").split(separator: "|").map(String.init)
+            let path = parts.first ?? NSTemporaryDirectory() + "settings.png"
             Task { @MainActor in
-                // The Settings scene can only be opened from SwiftUI, so host
-                // the same view in a plain window for the snapshot
-                let window = NSWindow(contentViewController: NSHostingController(rootView: SettingsView()))
-                window.title = "Settings"
-                window.makeKeyAndOrderFront(nil)
-                NSApp.activate()
-                try? await Task.sleep(for: .milliseconds(800))
-                defer { window.close() }
+                if parts.count > 1 { UserDefaults.standard.set(parts[1], forKey: "settingsTab") }
+                // The Settings scene opens only through SwiftUI's openSettings,
+                // so ask a SwiftUI view (in the About window) to open it
+                WindowManager.shared.showAbout()
+                try? await Task.sleep(for: .milliseconds(300))
+                NotificationCenter.default.post(name: .debugOpenSettings, object: nil)
+                try? await Task.sleep(for: .milliseconds(1200))
+                guard let window = NSApp.windows.first(where: {
+                    $0.isVisible && ($0.identifier?.rawValue.contains("Settings") == true || $0.frameAutosaveName.contains("Settings"))
+                }) else {
+                    debugLog("settings window not found: \(NSApp.windows.map { "\($0.title) \($0.identifier?.rawValue ?? "")" })")
+                    return
+                }
                 if let image = CGWindowListCreateImage(.null, .optionIncludingWindow, CGWindowID(window.windowNumber), [.bestResolution]) {
                     try? NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])?.write(to: URL(filePath: path))
                     debugLog("settings snapshot: \(path)")

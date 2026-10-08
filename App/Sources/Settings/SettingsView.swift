@@ -7,36 +7,96 @@ import KeyboardShortcuts
 import ServiceManagement
 import SwiftUI
 
+/// Settings, as standard macOS toolbar tabs. Each tab is a short grouped
+/// form, so the window stays small.
 struct SettingsView: View {
-    @AppStorage(AppSettings.Key.onErrors) private var onErrors = ConversionPolicy.strict.rawValue
-    @AppStorage(AppSettings.Key.showHUD) private var showHUD = true
-    @AppStorage(AppSettings.Key.playSound) private var playSound = true
-    @AppStorage(AppSettings.Key.historyLength) private var historyLength = HistoryStore.defaultCapacity
-    @AppStorage(AppSettings.Key.keepHistory) private var keepHistory = true
-    @AppStorage(AppSettings.Key.showInDock) private var showInDock = false
-    @AppStorage(AppSettings.Key.autoPaste) private var autoPaste = false
-    @AppStorage(AppSettings.Key.inspectorShortcutEnabled) private var inspectorShortcutEnabled = false
-    @State private var confirmClear = false
-    @State private var accessibilityTrusted = AutoPaste.isTrusted
-    private var history: HistoryStore { AppModel.shared.history }
+    enum Tab: String {
+        case general, shortcuts, conversion, history, updates
+    }
+
+    @AppStorage("settingsTab") private var tab = Tab.general
 
     var body: some View {
-        Form {
-            Section(Branding.appName) {
-                LabeledContent("Version", value: "\(Branding.displayVersion) (\(Branding.build))")
-                UpdateStatusView()
-            }
+        TabView(selection: $tab) {
+            GeneralSettings()
+                .tabItem { Label("General", systemImage: "gearshape") }
+                .tag(Tab.general)
+            ShortcutSettings()
+                .tabItem { Label("Shortcuts", systemImage: "keyboard") }
+                .tag(Tab.shortcuts)
+            ConversionSettings()
+                .tabItem { Label("Conversion", systemImage: "arrow.left.arrow.right") }
+                .tag(Tab.conversion)
+            HistorySettings()
+                .tabItem { Label("History", systemImage: "clock.arrow.circlepath") }
+                .tag(Tab.history)
+            UpdateSettings()
+                .tabItem { Label("Updates", systemImage: "arrow.down.circle") }
+                .tag(Tab.updates)
+        }
+        .frame(width: 520)
+        .onAppear { Updates.shared.checkInBackground() }
+    }
+}
 
-            Section("Shortcuts") {
+/// A tab's content: a grouped form, as tall as its content.
+private struct SettingsPage<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        Form { content }
+            .formStyle(.grouped)
+            .scrollDisabled(true)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+private struct GeneralSettings: View {
+    @AppStorage(AppSettings.Key.showInDock) private var showInDock = false
+
+    var body: some View {
+        SettingsPage {
+            Section {
+                LaunchAtLoginToggle()
+                Toggle("Show in Dock", isOn: $showInDock)
+                    .onChange(of: showInDock) { _, value in DockIcon.apply(show: value) }
+            }
+            Section("FileMaker Pro") {
+                FileMakerInstallations()
+            }
+        }
+    }
+}
+
+private struct ShortcutSettings: View {
+    @AppStorage(AppSettings.Key.inspectorShortcutEnabled) private var inspectorShortcutEnabled = false
+
+    var body: some View {
+        SettingsPage {
+            Section {
                 KeyboardShortcuts.Recorder("Convert clipboard:", name: .convertClipboard)
+            }
+            Section {
                 Toggle("Shortcut to open the inspector", isOn: $inspectorShortcutEnabled)
                     .onChange(of: inspectorShortcutEnabled) { _, on in InspectorShortcut.apply(enabled: on) }
                 if inspectorShortcutEnabled {
                     KeyboardShortcuts.Recorder("Open inspector:", name: .openInspector)
                 }
             }
+        }
+    }
+}
 
-            Section("Conversion") {
+private struct ConversionSettings: View {
+    @AppStorage(AppSettings.Key.onErrors) private var onErrors = ConversionPolicy.strict.rawValue
+    @AppStorage(AppSettings.Key.showHUD) private var showHUD = true
+    @AppStorage(AppSettings.Key.playSound) private var playSound = true
+    @AppStorage(AppSettings.Key.autoPaste) private var autoPaste = false
+    @State private var accessibilityTrusted = AutoPaste.isTrusted
+
+    var body: some View {
+        SettingsPage {
+            Section {
                 Picker("On errors:", selection: $onErrors) {
                     Text("Leave clipboard unchanged").tag(ConversionPolicy.strict.rawValue)
                     Text("Copy what converted").tag(ConversionPolicy.continueOnError.rawValue)
@@ -47,7 +107,6 @@ struct SettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-
             Section("After converting") {
                 Toggle("Show HUD", isOn: $showHUD)
                 Toggle("Play sound", isOn: $playSound)
@@ -67,8 +126,19 @@ struct SettingsView: View {
                     }
                 }
             }
+        }
+    }
+}
 
-            Section("History") {
+private struct HistorySettings: View {
+    @AppStorage(AppSettings.Key.historyLength) private var historyLength = HistoryStore.defaultCapacity
+    @AppStorage(AppSettings.Key.keepHistory) private var keepHistory = true
+    @State private var confirmClear = false
+    private var history: HistoryStore { AppModel.shared.history }
+
+    var body: some View {
+        SettingsPage {
+            Section {
                 Stepper(value: $historyLength, in: HistoryStore.capacityRange, step: 5) {
                     LabeledContent("Keep the last", value: historyLength == 0 ? "off" : "\(historyLength) conversions")
                 }
@@ -84,35 +154,39 @@ struct SettingsView: View {
                 if let error = history.lastError {
                     Text(error).font(.caption).foregroundStyle(.red)
                 }
+            }
+            Section {
                 Button("Clear History…") { confirmClear = true }
                     .disabled(history.unpinnedEntries.isEmpty)
             }
-
-            Section("General") {
-                LaunchAtLoginToggle()
-                Toggle("Show in Dock", isOn: $showInDock)
-                    .onChange(of: showInDock) { _, value in DockIcon.apply(show: value) }
-                if Updates.shared.isAvailable {
-                    Toggle("Check for updates automatically", isOn: Binding(
-                        get: { Updates.shared.automaticallyChecks },
-                        set: { Updates.shared.automaticallyChecks = $0 }
-                    ))
-                }
-            }
-
-            Section("FileMaker Pro") {
-                FileMakerInstallations()
-            }
         }
-        .formStyle(.grouped)
-        .onAppear { Updates.shared.checkInBackground() }
-        .frame(width: 500)
-        .fixedSize(horizontal: false, vertical: true)
         .confirmationDialog("Clear the conversion history?", isPresented: $confirmClear) {
             Button("Clear History", role: .destructive) { InspectorModel.shared.clearHistory() }
         } message: {
             Text("Pinned entries are kept.")
         }
+    }
+}
+
+private struct UpdateSettings: View {
+    private var updates = Updates.shared
+
+    var body: some View {
+        SettingsPage {
+            Section {
+                LabeledContent("Version", value: "\(Branding.displayVersion) (\(Branding.build))")
+                UpdateStatusView()
+            }
+            if updates.isAvailable {
+                Section {
+                    Toggle("Check for updates automatically", isOn: Binding(
+                        get: { updates.automaticallyChecks },
+                        set: { updates.automaticallyChecks = $0 }
+                    ))
+                }
+            }
+        }
+        .onAppear { updates.checkInBackground() }
     }
 }
 

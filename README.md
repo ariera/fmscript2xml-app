@@ -68,13 +68,15 @@ empty playground.
 
 ![The inspector: history with a pinned entry, the input with two problems marked, the XML, and Fix buttons](docs/images/inspector.png)
 
-**Settings.** Shortcuts (convert; open the inspector, off by default), what to do on errors (leave
-the clipboard unchanged, or copy what converted), HUD and sound, paste
-automatically after converting, history length and whether to keep it after
-quitting, launch at login, show in Dock, and the installed FileMaker versions.
+**Settings** has five tabs. *General*: launch at login, show in Dock, and the
+installed FileMaker versions. *Shortcuts*: convert, and an optional shortcut to
+open the inspector. *Conversion*: what to do on errors (leave the clipboard
+unchanged, or copy what converted), HUD, sound, and pasting automatically
+after converting. *History*: how many conversions to keep, and whether to keep
+them after quitting. *Updates*: the version, and checking for updates.
 
 <p>
-  <img src="docs/images/settings.png" width="300" alt="Settings">
+  <img src="docs/images/settings.png" width="380" alt="Settings: the Conversion tab">
   <img src="docs/images/about.png" width="300" alt="About fmscript2xml">
 </p>
 

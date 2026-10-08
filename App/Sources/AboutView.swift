@@ -6,8 +6,26 @@ import FMScriptKit
 import SwiftUI
 
 /// The About window: sized to its text, so nothing scrolls.
+#if DEBUG
+extension Notification.Name {
+    /// Debug hook: open the real Settings window (needs a SwiftUI view).
+    static let debugOpenSettings = Notification.Name("debugOpenSettings")
+}
+#endif
+
 struct AboutView: View {
+    #if DEBUG
+    @Environment(\.openSettings) private var openSettings
+    #endif
+
     var body: some View {
+        content
+        #if DEBUG
+            .onReceive(NotificationCenter.default.publisher(for: .debugOpenSettings)) { _ in openSettings() }
+        #endif
+    }
+
+    private var content: some View {
         VStack(spacing: 12) {
             Image(nsImage: NSApp.applicationIconImage)
                 .resizable()
