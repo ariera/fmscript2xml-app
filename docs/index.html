@@ -1,0 +1,221 @@
+<!doctype html>
+<!-- Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera.
+     SPDX-License-Identifier: GPL-3.0-or-later -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fmscript2xml — paste script steps into FileMaker</title>
+<meta name="description" content="A macOS menu bar app that turns plain-text FileMaker script steps into real steps you can paste into the Script Workspace.">
+<meta property="og:title" content="fmscript2xml">
+<meta property="og:description" content="Copy script steps as text, press ⌃⌥⌘F, paste them into FileMaker as real steps.">
+<meta property="og:image" content="https://ariera.github.io/fmscript2xml-app/logo.png">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1d1d1f;
+    --muted: #5f6368;
+    --line: #e3e5e8;
+    --card: #f6f7f9;
+    --accent: #1a6fb5;
+    --accent-fg: #ffffff;
+    --code: #eef1f5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141518;
+      --fg: #ececee;
+      --muted: #a1a5ab;
+      --line: #2a2d33;
+      --card: #1c1e22;
+      --accent: #3b9be0;
+      --accent-fg: #0b1420;
+      --code: #24272d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 0 16px; }
+  a { color: var(--accent); }
+  kbd {
+    font: 600 0.9em -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--code);
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+  code {
+    font: 0.88em ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--code);
+    border-radius: 4px;
+    padding: 1px 5px;
+    overflow-wrap: anywhere;
+  }
+
+  header { text-align: center; padding: 56px 0 24px; }
+  header img { width: 112px; height: 112px; }
+  h1 { font-size: 2.4rem; margin: 12px 0 4px; letter-spacing: -0.02em; }
+  .tagline { font-size: 1.25rem; color: var(--muted); margin: 0 0 24px; }
+  .download {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-fg);
+    font-weight: 600;
+    text-decoration: none;
+    padding: 12px 22px;
+    border-radius: 10px;
+  }
+  .download:hover { filter: brightness(1.08); }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-top: 10px; }
+
+  .demo { margin: 24px 0 8px; }
+  .demo img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    display: block;
+  }
+  /* Window screenshots carry their own frame and shadow */
+  figure img { width: 100%; height: auto; display: block; }
+
+  section { padding: 28px 0; border-top: 1px solid var(--line); }
+  section:first-of-type { border-top: 0; }
+  h2 { font-size: 1.35rem; margin: 0 0 12px; }
+  .lead { font-size: 1.05rem; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0; list-style: none; counter-reset: step; }
+  .steps li { background: var(--card); border-radius: 12px; padding: 16px; counter-increment: step; }
+  .steps li::before {
+    content: counter(step);
+    display: inline-block;
+    width: 26px; height: 26px; line-height: 26px;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-fg);
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+  .steps strong { display: block; }
+
+  .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 28px; padding: 0; list-style: none; }
+  .features li strong { display: block; }
+  .features li span { color: var(--muted); }
+  figure { margin: 20px 0 0; }
+  figcaption { color: var(--muted); font-size: 0.9rem; text-align: center; margin-top: 8px; }
+
+  ol.install { padding-left: 22px; }
+  ol.install li { margin-bottom: 6px; }
+
+  footer { border-top: 1px solid var(--line); padding: 24px 0 40px; color: var(--muted); font-size: 0.9rem; text-align: center; }
+  footer a { color: inherit; }
+
+  @media (max-width: 640px) {
+    header { padding-top: 36px; }
+    h1 { font-size: 2rem; }
+    .steps, .features { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="logo.png" alt="fmscript2xml icon">
+    <h1>fmscript2xml</h1>
+    <p class="tagline">Paste plain-text script steps into FileMaker as real steps.</p>
+    <a class="download" id="download" href="https://github.com/ariera/fmscript2xml-app/releases/latest">Download for macOS</a>
+    <div class="meta"><span id="version">Beta</span> · macOS 14 or later · free and open source</div>
+  </header>
+
+  <div class="demo">
+    <img src="images/workflow.gif" width="1010" height="440"
+         alt="Script steps selected in a text editor, copied, converted with ⌃⌥⌘F, then pasted into FileMaker's Script Workspace as steps">
+  </div>
+
+  <section>
+    <h2>Why</h2>
+    <p class="lead">FileMaker can't paste script steps written as text. A step you see in an
+    editor, a code review, documentation or an AI assistant has to be retyped by hand in the
+    Script Workspace, line by line. That is slow and error-prone work.</p>
+    <p class="lead">fmscript2xml does it for you. Copy the steps as text, press a shortcut, and
+    paste them into FileMaker as real script steps. The conversion takes a fraction of a second.</p>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><strong>Copy</strong>Select script steps written as text, in any app, and copy them.</li>
+      <li><strong>Convert</strong>Press <kbd>⌃⌥⌘F</kbd>. The clipboard now holds FileMaker steps.</li>
+      <li><strong>Paste</strong>Paste them into a script in FileMaker's Script Workspace.</li>
+    </ol>
+    <p>If a step can't be converted, the clipboard is left unchanged and a notification names the
+    line, with a "did you mean" suggestion when there is one.</p>
+  </section>
+
+  <section>
+    <h2>Features</h2>
+    <ul class="features">
+      <li><strong>Lives in the menu bar</strong><span>One global shortcut, configurable. No windows in the way.</span></li>
+      <li><strong>History</strong><span>Copy any recent conversion again from the menu bar. Pin the ones you reuse.</span></li>
+      <li><strong>Inspector</strong><span>See which input line became which XML step, edit the input and fix problems in place.</span></li>
+      <li><strong>Did you mean</strong><span>Typos in step names and parameters come with a suggested fix.</span></li>
+      <li><strong>Private</strong><span>Everything happens on your Mac. No account, no telemetry.</span></li>
+      <li><strong>No FileMaker needed to convert</strong><span>The app writes FileMaker's clipboard format itself.</span></li>
+    </ul>
+    <figure>
+      <img src="images/inspector.png" width="1292" height="864" loading="lazy"
+           alt="The inspector: conversion history, the input with two problems marked, the generated XML, and Fix buttons">
+      <figcaption>The inspector shows how each line was converted, with fixes for problems.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Installing</h2>
+    <p>fmscript2xml is in beta for all 0.x versions. Beta builds aren't notarised by Apple yet, so
+    macOS blocks the first launch:</p>
+    <ol class="install">
+      <li>Download the DMG, open it, and drag <strong>fmscript2xml</strong> to Applications.</li>
+      <li>Open it. When macOS says it can't verify the developer, click <strong>Done</strong>.</li>
+      <li>Open <strong>System Settings → Privacy &amp; Security</strong>, click <strong>Open Anyway</strong>
+          next to "fmscript2xml was blocked", and confirm.</li>
+    </ol>
+    <p>You only do this once; updates install from the app. Alternatively, in Terminal:
+    <code>xattr -dr com.apple.quarantine /Applications/fmscript2xml.app</code></p>
+  </section>
+</main>
+
+<footer>
+  <a href="https://github.com/ariera/fmscript2xml-app">Source on GitHub</a> ·
+  <a href="https://github.com/ariera/fmscript2xml-app/releases">Releases</a> ·
+  <a href="https://github.com/ariera/fmscript2xml-app/issues">Report a problem</a><br>
+  Licensed under <a href="https://www.gnu.org/licenses/gpl-3.0.html">GPL-3.0-or-later</a>.
+  Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera.
+</footer>
+
+<script>
+  // Point the button straight at the latest DMG and show its version.
+  // Without network access to the API, the button keeps linking to the Releases page.
+  fetch("https://api.github.com/repos/ariera/fmscript2xml-app/releases/latest")
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (release) {
+      if (!release) return;
+      var dmg = (release.assets || []).find(function (a) { return /\.dmg$/.test(a.name); });
+      if (dmg) document.getElementById("download").href = dmg.browser_download_url;
+      if (release.name) {
+        document.getElementById("version").textContent = release.name.replace(/^fmscript2xml\s*/, "Version ");
+      }
+    })
+    .catch(function () {});
+</script>
+</body>
+</html>
