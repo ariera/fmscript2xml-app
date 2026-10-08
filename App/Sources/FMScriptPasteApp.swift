@@ -1,6 +1,7 @@
 // Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import FMHistory
 import FMScriptKit
 import KeyboardShortcuts
 import SwiftUI
@@ -28,6 +29,7 @@ struct FMScriptPasteApp: App {
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
+        DockIcon.apply(show: AppSettings.showInDock)
         KeyboardShortcuts.onKeyUp(for: .convertClipboard) {
             Task { @MainActor in AppModel.shared.convertClipboard() }
         }
@@ -35,11 +37,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Task { @MainActor in WindowManager.shared.showInspector() }
         }
         Notifications.shared.configure()
+        Updates.shared.start()
         if !AppSettings.hasCompletedFirstRun {
             WindowManager.shared.showWelcome()
         }
         #if DEBUG
-        // Lets scripts trigger a conversion without the hotkey
+        // Let scripts drive the app without the hotkey
         DistributedNotificationCenter.default().addObserver(
             forName: Notification.Name("\(Branding.bundleIdentifier).debug.convert"), object: nil, queue: .main
         ) { _ in
@@ -51,14 +54,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let path = note.object as? String ?? NSTemporaryDirectory() + "inspector.png"
             Task { @MainActor in WindowManager.shared.snapshotInspector(to: URL(filePath: path)) }
         }
+        DistributedNotificationCenter.default().addObserver(
+            forName: Notification.Name("\(Branding.bundleIdentifier).debug.inspector"), object: nil, queue: .main
+        ) { note in
+            let command = note.object as? String ?? ""
+            Task { @MainActor in InspectorModel.shared.debugCommand(command) }
+        }
         #endif
     }
+
+    /// Clicking the Dock icon (when shown) opens the inspector.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag { WindowManager.shared.showInspector() }
+        return true
+    }
+
+    /// Closing the last window never quits a menu bar app.
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
 }
 
 /// The menu bar menu.
 struct MenuContent: View {
     @Environment(\.openSettings) private var openSettings
     private var model = AppModel.shared
+    private static let recentCount = 8
 
     var body: some View {
         Button("Convert Clipboard") { model.convertClipboard() }
@@ -68,12 +87,32 @@ struct MenuContent: View {
 
         Divider()
 
-        if let last = model.lastRecord {
-            Text(last.menuSummary)
-            Button("Show Last Conversion…") { WindowManager.shared.showInspector() }
-        } else {
-            Text("No conversions yet")
+        if model.history.capacity > 0 {
+            let recent = model.history.entries.prefix(Self.recentCount)
+            if recent.isEmpty {
+                Text("No conversions yet")
+            } else {
+                Text("Recent — click to copy again")
+                ForEach(recent) { entry in
+                    Button {
+                        model.activate(entry)
+                    } label: {
+                        Image(systemName: entry.status.symbol)
+                        Text("\(entry.shortTitle(maxLength: 40))  ·  \(entry.date.formatted(.relative(presentation: .numeric, unitsStyle: .abbreviated)))")
+                    }
+                }
+            }
+        } else if let last = model.lastEntry {
+            Button {
+                model.activate(last)
+            } label: {
+                Image(systemName: last.status.symbol)
+                Text("Last: \(last.shortTitle(maxLength: 40))")
+            }
         }
+
+        Button("Inspector…") { WindowManager.shared.showInspector() }
+        Button("New Draft…") { WindowManager.shared.showNewDraft() }
 
         Divider()
 
@@ -82,6 +121,9 @@ struct MenuContent: View {
             openSettings()
         }
         .keyboardShortcut(",")
+        if Updates.shared.isAvailable {
+            Button("Check for Updates…") { Updates.shared.checkForUpdates() }
+        }
         Button("Welcome Guide…") { WindowManager.shared.showWelcome() }
         Button("About \(Branding.appName)") { WindowManager.shared.showAbout() }
 

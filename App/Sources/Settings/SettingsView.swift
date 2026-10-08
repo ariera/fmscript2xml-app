@@ -1,6 +1,7 @@
 // Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import FMHistory
 import FMScriptKit
 import KeyboardShortcuts
 import ServiceManagement
@@ -10,6 +11,13 @@ struct SettingsView: View {
     @AppStorage(AppSettings.Key.onErrors) private var onErrors = ConversionPolicy.strict.rawValue
     @AppStorage(AppSettings.Key.showHUD) private var showHUD = true
     @AppStorage(AppSettings.Key.playSound) private var playSound = true
+    @AppStorage(AppSettings.Key.historyLength) private var historyLength = HistoryStore.defaultCapacity
+    @AppStorage(AppSettings.Key.keepHistory) private var keepHistory = true
+    @AppStorage(AppSettings.Key.showInDock) private var showInDock = false
+    @AppStorage(AppSettings.Key.autoPaste) private var autoPaste = false
+    @State private var confirmClear = false
+    @State private var accessibilityTrusted = AutoPaste.isTrusted
+    private var history: HistoryStore { AppModel.shared.history }
 
     var body: some View {
         Form {
@@ -30,13 +38,55 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
 
-            Section("Feedback") {
-                Toggle("Show HUD after converting", isOn: $showHUD)
+            Section("After converting") {
+                Toggle("Show HUD", isOn: $showHUD)
                 Toggle("Play sound", isOn: $playSound)
+                Toggle("Paste automatically (⌘V)", isOn: $autoPaste)
+                    .onChange(of: autoPaste) { _, on in
+                        if on && !AutoPaste.isTrusted { AutoPaste.requestTrust() }
+                        accessibilityTrusted = AutoPaste.isTrusted
+                    }
+                if autoPaste && !accessibilityTrusted {
+                    HStack {
+                        Text("Needs Accessibility permission for \(Branding.appName).")
+                            .font(.caption)
+                        Button("Open Accessibility Settings") { AutoPaste.openAccessibilitySettings() }
+                            .controlSize(.small)
+                        Button("Check Again") { accessibilityTrusted = AutoPaste.isTrusted }
+                            .controlSize(.small)
+                    }
+                }
+            }
+
+            Section("History") {
+                Stepper(value: $historyLength, in: HistoryStore.capacityRange, step: 5) {
+                    LabeledContent("Keep the last", value: historyLength == 0 ? "off" : "\(historyLength) conversions")
+                }
+                .onChange(of: historyLength) { _, value in AppModel.shared.setHistoryLength(value) }
+                Toggle("Keep history after quitting", isOn: $keepHistory)
+                    .onChange(of: keepHistory) { _, value in AppModel.shared.setKeepHistory(value) }
+                Text(keepHistory
+                     ? "Saved on this Mac only, in Application Support. Scripts can contain credentials."
+                     : "History is kept in memory and forgotten when the app quits.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                if let error = history.lastError {
+                    Text(error).font(.caption).foregroundStyle(.red)
+                }
+                Button("Clear History…") { confirmClear = true }
+                    .disabled(history.entries.isEmpty)
             }
 
             Section("General") {
                 LaunchAtLoginToggle()
+                Toggle("Show in Dock", isOn: $showInDock)
+                    .onChange(of: showInDock) { _, value in DockIcon.apply(show: value) }
+                if Updates.shared.isAvailable {
+                    Toggle("Check for updates automatically", isOn: Binding(
+                        get: { Updates.shared.automaticallyChecks },
+                        set: { Updates.shared.automaticallyChecks = $0 }
+                    ))
+                }
             }
 
             Section("FileMaker Pro") {
@@ -44,8 +94,11 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 480)
+        .frame(width: 500)
         .fixedSize(horizontal: false, vertical: true)
+        .confirmationDialog("Clear the conversion history?", isPresented: $confirmClear) {
+            Button("Clear History", role: .destructive) { InspectorModel.shared.clearHistory() }
+        }
     }
 }
 

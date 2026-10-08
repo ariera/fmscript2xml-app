@@ -1,6 +1,7 @@
 // Copyright © 2026 the fmscript2xml-app contributors. Created by Alejandro Riera.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import FMHistory
 import FMScriptKit
 import Foundation
 
@@ -12,6 +13,10 @@ enum AppSettings {
         static let showHUD = "showHUD"
         static let playSound = "playSound"
         static let hasCompletedFirstRun = "hasCompletedFirstRun"
+        static let historyLength = "historyLength"
+        static let keepHistory = "keepHistory"
+        static let showInDock = "showInDock"
+        static let autoPaste = "autoPaste"
     }
 
     private static var defaults: UserDefaults { .standard }
@@ -23,6 +28,10 @@ enum AppSettings {
 
     static var showHUD: Bool { defaults.object(forKey: Key.showHUD) as? Bool ?? true }
     static var playSound: Bool { defaults.object(forKey: Key.playSound) as? Bool ?? true }
+    static var historyLength: Int { defaults.object(forKey: Key.historyLength) as? Int ?? HistoryStore.defaultCapacity }
+    static var keepHistory: Bool { defaults.object(forKey: Key.keepHistory) as? Bool ?? true }
+    static var showInDock: Bool { defaults.bool(forKey: Key.showInDock) }
+    static var autoPaste: Bool { defaults.bool(forKey: Key.autoPaste) }
 
     static var hasCompletedFirstRun: Bool {
         get { defaults.bool(forKey: Key.hasCompletedFirstRun) }
