@@ -10,6 +10,7 @@ let package = Package(
     products: [
         .library(name: "FMScriptKit", targets: ["FMScriptKit"]),
         .library(name: "FMClipboard", targets: ["FMClipboard"]),
+        .library(name: "FMHistory", targets: ["FMHistory"]),
         .executable(name: "fmscript2xml", targets: ["fmscript2xml"]),
     ],
     targets: [
@@ -23,6 +24,8 @@ let package = Package(
         ),
         // NSPasteboard read/write for FileMaker clipboard flavors.
         .target(name: "FMClipboard"),
+        // Conversion history: entries and the JSON-backed store (no UI).
+        .target(name: "FMHistory", dependencies: ["FMScriptKit"]),
         // Swift CLI, drop-in for the Python `fmscript2xml` CLI.
         .executableTarget(
             name: "fmscript2xml",
@@ -36,6 +39,10 @@ let package = Package(
         .testTarget(
             name: "FMScriptKitTests",
             dependencies: ["FMScriptKit", "FMClipboard"]
+        ),
+        .testTarget(
+            name: "FMHistoryTests",
+            dependencies: ["FMHistory", "FMScriptKit"]
         ),
         .testTarget(
             name: "ConformanceTests",
