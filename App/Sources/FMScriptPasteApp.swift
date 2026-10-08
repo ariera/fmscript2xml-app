@@ -60,6 +60,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let command = note.object as? String ?? ""
             Task { @MainActor in InspectorModel.shared.debugCommand(command) }
         }
+        DistributedNotificationCenter.default().addObserver(
+            forName: Notification.Name("\(Branding.bundleIdentifier).debug.snapshotSettings"), object: nil, queue: .main
+        ) { note in
+            let path = note.object as? String ?? NSTemporaryDirectory() + "settings.png"
+            Task { @MainActor in
+                // The Settings scene can only be opened from SwiftUI, so host
+                // the same view in a plain window for the snapshot
+                let window = NSWindow(contentViewController: NSHostingController(rootView: SettingsView()))
+                window.title = "Settings"
+                window.makeKeyAndOrderFront(nil)
+                NSApp.activate()
+                try? await Task.sleep(for: .milliseconds(800))
+                defer { window.close() }
+                if let image = CGWindowListCreateImage(.null, .optionIncludingWindow, CGWindowID(window.windowNumber), [.boundsIgnoreFraming]) {
+                    try? NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])?.write(to: URL(filePath: path))
+                    debugLog("settings snapshot: \(path)")
+                }
+            }
+        }
         #endif
     }
 
