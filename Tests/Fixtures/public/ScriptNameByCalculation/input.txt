@@ -1,0 +1,4 @@
+Perform Script [ Calculated: $name ]
+Perform Script [ Calculated: "Prefix_" & $x ; Parameter: $p ]
+Perform Script [ Calculated: Get ( ScriptParameter ) ]
+Perform Script [ "Prefix_" & $x ]

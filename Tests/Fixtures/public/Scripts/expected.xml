@@ -28,7 +28,7 @@
   </Step>
   <Step enable="True" id="1" name="Perform Script">
     <Calculated>
-      <Calculation/>
+      <Calculation><![CDATA[$name]]></Calculation>
     </Calculated>
   </Step>
   <Step enable="True" id="89" name="Comment">

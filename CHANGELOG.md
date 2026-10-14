@@ -1,5 +1,12 @@
 # Changelog
 
+## Converter 0.6.2
+
+- **`Perform Script [ Calculated: … ]` keeps its calculation.** The script
+  name calculation was dropped, leaving an empty `<Calculated>`, and
+  `Calculated:` was reported as an unknown parameter. The calculated name now
+  also comes before the parameter, as in FileMaker's XML.
+
 ## Converter 0.6.1
 
 - **Names in curly quotes are unquoted.** `Perform Script [ “My Script” ]`,

@@ -93,7 +93,7 @@ func scriptReference(_ step: ParsedStep) -> (script: String, file: String)? {
 }
 
 struct PerformScriptHandler: StepHandler {
-    var knownLabels: Set<String> { ["Parameter", "Script", "Specified", "File", "From file"] }
+    var knownLabels: Set<String> { ["Parameter", "Script", "Specified", "Calculated", "File", "From file"] }
 
     func generate(_ step: ParsedStep, _ def: StepDefinition) -> [XElement] {
         var elements: [XElement] = []
@@ -105,15 +105,18 @@ struct PerformScriptHandler: StepHandler {
         let reference = scriptReference(step)
         let rawName = reference?.script ?? step.params.get("Script", step.params.get("0", ""))
         let scriptName = stripQuotes(rawName)
-        // A quoted name is never a calculation; `"Prefix_" & $x` is
-        let calculated = step.rawText.pyContains("Calculated:")
-            || (!isQuotedName(rawName) && scriptName.pyStartsWith("\""))
+        // The script name as a calculation: `Calculated: $name`, or text that
+        // starts with a quote but isn't a quoted name (`"Prefix_" & $x`)
+        let calculation: String? = step.params["Calculated"].map { $0.pyStrip() }
+            ?? (!isQuotedName(rawName) && scriptName.pyStartsWith("\"") ? scriptName : nil)
 
-        // A script in another file: the file reference comes first.
+        // A calculated name, or a script in another file, comes first.
         // FileMaker resolves the data source (ID, path) and the script's ID
         // by name on paste.
         let file = stripQuotes(reference?.file ?? step.params["File"] ?? step.params["From file"] ?? "")
-        if !file.isEmpty && !calculated {
+        if let calculation {
+            e.append(XMLBuilder.wrappedCalculation("Calculated", calculation))
+        } else if !file.isEmpty {
             var ref = XElement("FileReference", ["id": "1", "name": file])
             ref.append(XElement("UniversalPathList", text: "file:" + file))
             e.append(ref)
@@ -125,9 +128,7 @@ struct PerformScriptHandler: StepHandler {
             e.append(XMLBuilder.wrappedCalculation("DisplayCalculation", param))
         }
 
-        if calculated {
-            e.append(XMLBuilder.wrappedCalculation("Calculated", scriptName))
-        } else {
+        if calculation == nil {
             // FileMaker corrects the ID on paste
             e.append(XElement("Script", ["name": scriptName, "id": "1"]))
         }

@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculated>
+      <Calculation><![CDATA[$name]]></Calculation>
+    </Calculated>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculated>
+      <Calculation><![CDATA["Prefix_" & $x]]></Calculation>
+    </Calculated>
+    <Calculation><![CDATA[$p]]></Calculation>
+    <DisplayCalculation>
+      <Calculation><![CDATA[$p]]></Calculation>
+    </DisplayCalculation>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculated>
+      <Calculation><![CDATA[Get ( ScriptParameter )]]></Calculation>
+    </Calculated>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculated>
+      <Calculation><![CDATA["Prefix_" & $x]]></Calculation>
+    </Calculated>
+  </Step>
+</fmxmlsnippet>
