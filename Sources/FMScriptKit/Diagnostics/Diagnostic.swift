@@ -21,6 +21,9 @@ public struct Diagnostic: Sendable, Hashable, Codable {
         case unbalancedBrackets
         /// A named parameter the step's handler doesn't read.
         case unknownParameter
+        /// A valid FileMaker parameter the step's handler can't represent;
+        /// the pasted step differs from the original.
+        case unsupportedParameter
         /// A named parameter given more than once; the last value is used.
         case duplicateParameter
         /// The step references a database object by name only; FileMaker

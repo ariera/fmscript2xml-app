@@ -1,0 +1,18 @@
+# Changelog
+
+## Converter 0.6.1
+
+- **Names in curly quotes are unquoted.** `Perform Script [ “My Script” ]`,
+  `Install OnTimer Script [ “My Script” ; … ]`, `Go to Layout [ “Customers” ]`
+  and `Go to Related Record [ … ; Using layout: “Customers” ]` now pick the
+  script or layout by name, as straight quotes already did. Before, the quotes
+  ended up in the name (or Go to Layout turned it into an invalid
+  calculation), so the pasted step pointed at nothing.
+- **Perform Script can call a script in another file.** `Perform Script [
+  Specified: From list ; “Script” from file: “File” ]` (and `File: "File"`)
+  now pastes as a call to that script in that file: FileMaker matches the
+  external data source and the script by name. Before, the file was dropped
+  without a warning, so the step called a script with that name in the
+  current file, and in the `from file:` form the script name was lost too.
+  Perform Script on Server (with or without callback) still can't do this;
+  it now gives a warning instead of dropping the file silently.

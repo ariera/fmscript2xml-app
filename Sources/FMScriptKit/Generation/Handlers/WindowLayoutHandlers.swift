@@ -80,16 +80,13 @@ struct GoToLayoutHandler: StepHandler {
         let comment = XMLBuilder.helperCommentStep(step.rawText)
         var e = XMLBuilder.step(def, step)
 
-        var layoutName = step.params.get("Layout", step.params.get("0", ""))
+        let layoutName = step.params.get("Layout", step.params.get("0", ""))
         if isCalculatedReference(layoutName) {
             e.append(XElement("LayoutDestination", ["value": "LayoutNameByCalc"]))
             e.append(XMLBuilder.wrappedCalculation("Layout", layoutName))
         } else {
             e.append(XElement("LayoutDestination", ["value": "SelectedLayout"]))
-            if layoutName.pyStartsWith("\"") && layoutName.pyEndsWith("\"") {
-                layoutName = layoutName.pyDropFirstAndLast()
-            }
-            e.append(XMLBuilder.layout(layoutName))
+            e.append(XMLBuilder.layout(stripQuotes(layoutName)))
         }
 
         let animation = step.params.get("Animation", "")
@@ -156,7 +153,7 @@ struct GoToRelatedRecordHandler: StepHandler {
             e.append(XElement("LayoutDestination", ["value": calculated ? "LayoutNameByCalc" : "SelectedLayout"]))
             layout = calculated
                 ? XMLBuilder.wrappedCalculation("Layout", layoutValue)
-                : XMLBuilder.layout(layoutValue.pyDropFirstAndLast())
+                : XMLBuilder.layout(stripQuotes(layoutValue))
         }
 
         if !optionText.isEmpty {
@@ -167,14 +164,8 @@ struct GoToRelatedRecordHandler: StepHandler {
             "Style": "Document", "Close": "Yes", "Minimize": "Yes", "Maximize": "Yes", "Resize": "Yes",
         ]))
 
-        var table = step.params.get("From table", step.params.get("Table", ""))
-        if !table.isEmpty {
-            if (table.pyStartsWith("\"") && table.pyEndsWith("\""))
-                || (table.pyStartsWith("“") && table.pyEndsWith("”")) {
-                table = table.pyDropFirstAndLast()
-            }
-            e.append(XMLBuilder.table(table))
-        }
+        let table = stripQuotes(step.params.get("From table", step.params.get("Table", "")))
+        if !table.isEmpty { e.append(XMLBuilder.table(table)) }
 
         if let layout { e.append(layout) }
         return [e]

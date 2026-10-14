@@ -482,9 +482,10 @@ Exit: daily use replaces the Automator Quick Action.
   warning = unknown parameter, unbalanced brackets (the step swallows the
   following lines, as in Python), skipped line; info = ID left blank (helper
   comment), truncated line, duplicate label. Valid FileMaker labels the
-  converter ignores (`Collapsed`, New Window options, `File` on Perform
-  Script, `Specify target field`) don't warn; tuned on the private corpus,
-  which then shows no false "did you mean" step suggestions.
+  converter ignores (`Collapsed`, New Window options, `Specify target field`)
+  don't warn; tuned on the private corpus, which then shows no false "did you
+  mean" step suggestions. (`File` on Perform Script used to be one of them;
+  since 2026-10-14 it warns, see below.)
 - *Deviations from the plan's sketches:*
   - `StepTrace.xmlTextRange` is stored as UTF-8 offsets (`xmlUTF8Range`, so
     traces stay `Codable`); `ConversionResult.xmlTextRange(for:)` returns the
@@ -595,6 +596,27 @@ Exit: daily use replaces the Automator Quick Action.
 - *Debug-only hooks* (not in Release builds): snapshot the inspector to a
   PNG, and run "fix"/"copy" in the inspector, from scripts. Used to verify
   layouts and flows without screen-recording permission.
+
+**Fixes (2026-10-14)**
+
+- *Curly-quoted names:* `“Name”` (how FileMaker shows names picked from a
+  list) is now unquoted like `"Name"` for Perform Script, Install OnTimer
+  Script, Set Field, and Go to Layout / Go to Related Record layouts. A
+  curly-quoted layout is always a selected layout: curly quotes don't
+  delimit text in a calculation. Departs from Python, whose output kept the
+  quotes; one private fixture still expects the old output.
+- *Scripts in other files:* `“Script” from file: “File”` (FileMaker's form)
+  and `File: "File"`. FileMaker's clipboard copy of such a Perform Script has
+  `<FileReference id name><UniversalPathList>file:…</UniversalPathList>
+  </FileReference>` as the step's first child, then the parameter, then
+  `<Script>`. Pasted back with the IDs set to 1 and the path guessed (or
+  missing), FileMaker filled in the data source's real ID and path and the
+  script's ID: both are matched by name. Perform Script now writes the
+  reference (fixture PerformScriptOtherFile). Perform Script on Server [with
+  Callback] isn't verified, so `from file` there gives an
+  `unsupportedParameter` warning instead of being dropped silently. Before,
+  the `from file` form also lost the script name.
+  **Open:** what FileMaker does when no data source of that name exists.
 
 ---
 

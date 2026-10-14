@@ -8,13 +8,13 @@
     <DisplayCalculation>
       <Calculation><![CDATA["start"]]></Calculation>
     </DisplayCalculation>
-    <Script name="“Utility_Log”" id="1"/>
+    <Script name="Utility_Log" id="1"/>
   </Step>
   <Step enable="True" id="89" name="Comment">
     <Text>Original: Perform Script [ Specified: From list ; “Utility_NoParam” ]</Text>
   </Step>
   <Step enable="True" id="1" name="Perform Script">
-    <Script name="“Utility_NoParam”" id="1"/>
+    <Script name="Utility_NoParam" id="1"/>
   </Step>
   <Step enable="True" id="1" name="Perform Script">
     <Calculation><![CDATA[$param]]></Calculation>
@@ -52,7 +52,7 @@
     </Calculated>
   </Step>
   <Step enable="True" id="148" name="Install OnTimer Script">
-    <Script name="“Utility_Tick”"/>
+    <Script name="Utility_Tick"/>
     <Interval>
       <Calculation><![CDATA[5]]></Calculation>
     </Interval>

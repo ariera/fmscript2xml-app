@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Script [ Specified: From list ; “Ext_Task” from file: “Other_File” ; Parameter: $p ]</Text>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <FileReference id="1" name="Other_File">
+      <UniversalPathList>file:Other_File</UniversalPathList>
+    </FileReference>
+    <Calculation><![CDATA[$p]]></Calculation>
+    <DisplayCalculation>
+      <Calculation><![CDATA[$p]]></Calculation>
+    </DisplayCalculation>
+    <Script name="Ext_Task" id="1"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Script [ &quot;Ext_Task&quot; ; Specified: From list ; File: &quot;Other_File&quot; ; Parameter: $p ]</Text>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <FileReference id="1" name="Other_File">
+      <UniversalPathList>file:Other_File</UniversalPathList>
+    </FileReference>
+    <Calculation><![CDATA[$p]]></Calculation>
+    <DisplayCalculation>
+      <Calculation><![CDATA[$p]]></Calculation>
+    </DisplayCalculation>
+    <Script name="Ext_Task" id="1"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Script on Server [ Specified: From list ; “Ext_Server_Task” from file: “Other_File” ; Wait for completion: On ]</Text>
+  </Step>
+  <Step enable="True" id="164" name="Perform Script on Server">
+    <WaitForCompletion state="True"/>
+    <Script name="Ext_Server_Task"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Script on Server with Callback [ Specified: From list ; “Ext_Server_Task” from file: “Other_File” ; Parameter: &quot;x&quot; ; Callback script specified: From list ; “Ext_Done” from file: “Other_File” ; Parameter: &quot;y&quot; ; State: Continue ]</Text>
+  </Step>
+  <Step enable="True" id="210" name="Perform Script on Server with Callback">
+    <CallbackScriptState value="Continue"/>
+    <Calculation><![CDATA["x"]]></Calculation>
+    <Script name="Ext_Server_Task"/>
+    <CallbackScript>
+      <ScriptName name="Ext_Done"/>
+      <ScriptParameter>
+        <Calculation><![CDATA["y"]]></Calculation>
+      </ScriptParameter>
+    </CallbackScript>
+  </Step>
+</fmxmlsnippet>

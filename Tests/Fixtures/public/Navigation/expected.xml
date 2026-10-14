@@ -19,10 +19,8 @@
     <Text>Original: Go to Layout [ “Customers” ; Animation: None ]</Text>
   </Step>
   <Step enable="True" id="6" name="Go to Layout">
-    <LayoutDestination value="LayoutNameByCalc"/>
-    <Layout>
-      <Calculation><![CDATA[“Customers”]]></Calculation>
-    </Layout>
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout name="Customers"/>
   </Step>
   <Step enable="True" id="89" name="Comment">
     <Text>Original: Go to Layout [ $returnLayout ]</Text>
@@ -73,15 +71,13 @@
     <MatchAllRecords state="False"/>
     <ShowInNewWindow state="False"/>
     <Restore state="True"/>
-    <LayoutDestination value="LayoutNameByCalc"/>
+    <LayoutDestination value="SelectedLayout"/>
     <Name>
       <Calculation><![CDATA[/*Show only related records*/]]></Calculation>
     </Name>
     <NewWndStyles Style="Document" Close="Yes" Minimize="Yes" Maximize="Yes" Resize="Yes"/>
     <Table name="Order Lines"/>
-    <Layout>
-      <Calculation><![CDATA[“Order Lines”]]></Calculation>
-    </Layout>
+    <Layout name="Order Lines"/>
   </Step>
   <Step enable="True" id="74" name="Go to Related Record">
     <Option state="False"/>

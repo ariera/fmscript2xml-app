@@ -24,9 +24,7 @@ struct SetFieldHandler: StepHandler {
         } else {
             value = step.params.get("1", value)
         }
-        if fieldName.pyStartsWith("\"") && fieldName.pyEndsWith("\"") {
-            fieldName = fieldName.pyDropFirstAndLast()
-        }
+        fieldName = stripQuotes(fieldName)
 
         // The value comes first, then the target field
         e.append(XMLBuilder.calculation(value))
@@ -52,16 +50,6 @@ struct SetFieldByNameHandler: StepHandler {
     }
 }
 
-/// Strips surrounding straight or curly quotes (after stripping whitespace).
-func stripQuotes(_ value: String) -> String {
-    let v = value.pyStrip()
-    if v.unicodeScalars.count >= 2,
-       (v.pyStartsWith("\"") && v.pyEndsWith("\"")) || (v.pyStartsWith("“") && v.pyEndsWith("”")) {
-        return v.pyDropFirstAndLast()
-    }
-    return v
-}
-
 /// Whether a script reference is calculated (vs. picked from the list).
 /// Python's version crashes on a missing name unless "By name" is specified;
 /// that surfaces as `HandlerError.missingScriptName`.
@@ -71,9 +59,41 @@ func isCalculatedScript(specified: String?, name: String?) throws(HandlerError) 
     return name.pyStrip().pyStartsWith("$")
 }
 
+/// Scripts in other files: FileMaker shows them as `“Script” from file:
+/// “File”`; a `File:` label is also accepted. Perform Script generates the
+/// file reference; the server steps don't yet, so their pasted step calls a
+/// script with that name in the current file.
+let externalFileLabels: [String: String] = Dictionary(
+    uniqueKeysWithValues: ["File", "From file"].map {
+        ($0, "scripts in other files aren’t supported yet, so the pasted step calls a script "
+            + "with that name in the current file. Re-select the script in FileMaker after pasting.")
+    }
+)
+
+/// `“Script” from file` (the part before the colon) → the script name.
+func externalScriptName(fromKey key: String) -> String? {
+    let suffix = " from file"
+    let k = key.scalars.pyStrip()
+    guard k.string.pyLower().pyEndsWith(suffix) else { return nil }
+    return k.pySlice(0, k.count - suffix.unicodeScalars.count).pyStrip().string
+}
+
+/// Splits `“Script” from file: “File”` into script and file names (quoted).
+func splitExternalScript(key: String, value: String) -> (script: String, file: String)? {
+    externalScriptName(fromKey: key).map { ($0, value) }
+}
+
+/// The script and file of a step that calls a script in another file, in
+/// the `“Script” from file: “File”` form.
+func scriptReference(_ step: ParsedStep) -> (script: String, file: String)? {
+    for (key, value) in step.params.items {
+        if let ref = splitExternalScript(key: key, value: value) { return ref }
+    }
+    return nil
+}
+
 struct PerformScriptHandler: StepHandler {
-    var knownLabels: Set<String> { ["Parameter", "Script", "Specified"] }
-    var ignoredLabels: Set<String> { ["File", "From file"] }
+    var knownLabels: Set<String> { ["Parameter", "Script", "Specified", "File", "From file"] }
 
     func generate(_ step: ParsedStep, _ def: StepDefinition) -> [XElement] {
         var elements: [XElement] = []
@@ -82,17 +102,30 @@ struct PerformScriptHandler: StepHandler {
         }
         var e = XMLBuilder.step(def, step)
 
+        let reference = scriptReference(step)
+        let rawName = reference?.script ?? step.params.get("Script", step.params.get("0", ""))
+        let scriptName = stripQuotes(rawName)
+        // A quoted name is never a calculation; `"Prefix_" & $x` is
+        let calculated = step.rawText.pyContains("Calculated:")
+            || (!isQuotedName(rawName) && scriptName.pyStartsWith("\""))
+
+        // A script in another file: the file reference comes first.
+        // FileMaker resolves the data source (ID, path) and the script's ID
+        // by name on paste.
+        let file = stripQuotes(reference?.file ?? step.params["File"] ?? step.params["From file"] ?? "")
+        if !file.isEmpty && !calculated {
+            var ref = XElement("FileReference", ["id": "1", "name": file])
+            ref.append(XElement("UniversalPathList", text: "file:" + file))
+            e.append(ref)
+        }
+
         let param = step.params.get("Parameter", "")
         if !param.isEmpty {
             e.append(XMLBuilder.calculation(param))
             e.append(XMLBuilder.wrappedCalculation("DisplayCalculation", param))
         }
 
-        var scriptName = step.params.get("Script", step.params.get("0", ""))
-        if scriptName.pyStartsWith("\"") && scriptName.pyEndsWith("\"") {
-            scriptName = scriptName.pyDropFirstAndLast()
-        }
-        if step.rawText.pyContains("Calculated:") || scriptName.pyStartsWith("\"") {
+        if calculated {
             e.append(XMLBuilder.wrappedCalculation("Calculated", scriptName))
         } else {
             // FileMaker corrects the ID on paste
@@ -108,10 +141,7 @@ struct InstallOnTimerScriptHandler: StepHandler {
 
     func generate(_ step: ParsedStep, _ def: StepDefinition) -> [XElement] {
         var e = XMLBuilder.step(def, step)
-        var scriptName = step.params.get("Script", step.params.get("0", ""))
-        if scriptName.pyStartsWith("\"") && scriptName.pyEndsWith("\"") {
-            scriptName = scriptName.pyDropFirstAndLast()
-        }
+        let scriptName = stripQuotes(step.params.get("Script", step.params.get("0", "")))
         if !scriptName.isEmpty { e.append(XElement("Script", ["name": scriptName])) }
         let interval = step.params.get("Interval", step.params.get("1", ""))
         if !interval.isEmpty { e.append(XMLBuilder.wrappedCalculation("Interval", interval)) }
@@ -121,6 +151,7 @@ struct InstallOnTimerScriptHandler: StepHandler {
 
 struct PerformScriptOnServerHandler: StepHandler {
     var knownLabels: Set<String> { ["Wait for completion", "Parameter", "Specified", "Script"] }
+    var unsupportedLabels: [String: String] { externalFileLabels }
 
     func generate(_ step: ParsedStep, _ def: StepDefinition) throws(HandlerError) -> [XElement] {
         var elements: [XElement] = []
@@ -137,7 +168,7 @@ struct PerformScriptOnServerHandler: StepHandler {
         if !param.isEmpty { e.append(XMLBuilder.calculation(param)) }
 
         let specified = step.params.get("Specified", "")
-        let scriptName = step.params.get("Script", step.params.get("0", ""))
+        let scriptName = scriptReference(step)?.script ?? step.params.get("Script", step.params.get("0", ""))
         if try isCalculatedScript(specified: specified, name: scriptName) {
             e.append(XMLBuilder.wrappedCalculation("Calculated", scriptName.pyStrip()))
         } else if !scriptName.isEmpty {
@@ -150,6 +181,7 @@ struct PerformScriptOnServerHandler: StepHandler {
 
 struct PerformScriptOnServerWithCallbackHandler: StepHandler {
     var knownLabels: Set<String> { ["Specified", "Parameter", "Callback script specified", "State"] }
+    var unsupportedLabels: [String: String] { externalFileLabels }
     var allowsDuplicateLabels: Bool { true }
 
     func generate(_ step: ParsedStep, _ def: StepDefinition) throws(HandlerError) -> [XElement] {
@@ -229,6 +261,10 @@ struct PerformScriptOnServerWithCallbackHandler: StepHandler {
             let (key, value) = splitKeyValue(part)
             guard let key else {
                 section.name = value
+                continue
+            }
+            if let ref = splitExternalScript(key: key, value: value) {
+                section.name = ref.script
                 continue
             }
             switch key.pyStrip().pyLower() {

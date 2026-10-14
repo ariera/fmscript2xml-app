@@ -9,9 +9,12 @@ Two kinds:
 - **FileMaker-verified** (`expected.xml` copied from FileMaker, compared
   semantically): BracketInStringLiteral, CalculationComments, CloseWindow,
   CommitRecordsRequests, GoToRecord, GoToRelatedRecord, PauseResumeScript,
-  PerformScriptOnServer, PerformScriptOnServerWithCallback, PrintSetup,
-  SaveRecordAsPdf, SetField, ShowCustomDialog, SortRecordsByField. These come
-  from the Python repo's `tests/fixtures/simple/`, with names replaced.
+  PerformScriptOnServer, PerformScriptOnServerWithCallback, PerformScriptOtherFile,
+  PrintSetup, SaveRecordAsPdf, SetField, ShowCustomDialog, SortRecordsByField.
+  These come from the Python repo's `tests/fixtures/simple/`, with names
+  replaced. PerformScriptOtherFile is a FileMaker clipboard copy (2026-10-14)
+  with names replaced and the data source path and both IDs set to what the
+  converter writes; pasting that back, FileMaker filled in the real ones.
 - **Regression fixtures** (`expected.xml` written by the reference
   implementation with `tools/new-fixture.sh`, compared byte for byte): all
   others. They pin down current behaviour, quirks included, across every

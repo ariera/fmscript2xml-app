@@ -90,6 +90,30 @@ import Testing
         #expect(d.first?.suggestion?.replacement == "Layout:")
     }
 
+    @Test(arguments: [
+        "Perform Script [ Specified: From list ; “Ext_Task” from file: “Other_File” ; Parameter: $p ]",
+        "Perform Script [ \"Ext_Task\" ; Specified: From list ; File: \"Other_File\" ]",
+    ])
+    func scriptInAnotherFileGetsAFileReference(_ text: String) {
+        let result = converter.convert(text)
+        #expect(result.warnings.isEmpty)
+        #expect(result.previewXML.contains("<FileReference id=\"1\" name=\"Other_File\">"))
+        #expect(result.previewXML.contains("name=\"Ext_Task\""))
+    }
+
+    @Test(arguments: [
+        "Perform Script on Server [ Specified: From list ; “Ext_Task” from file: “Other_File” ]",
+        "Perform Script on Server with Callback [ Specified: From list ; “Ext_Task” from file: “Other_File” ; "
+            + "Callback script specified: From list ; “Done” ; State: Continue ]",
+    ])
+    func serverScriptInAnotherFileIsFlagged(_ text: String) {
+        let result = converter.convert(text)
+        #expect(result.warnings.map(\.code) == [.unsupportedParameter])
+        #expect(result.warnings.first?.message.hasPrefix("“from file: Other_File” was ignored") == true)
+        #expect(result.previewXML.contains("name=\"Ext_Task\""))
+        #expect(!result.previewXML.contains("FileReference"))
+    }
+
     @Test func genericStepsAcceptAnyLabel() {
         #expect(converter.convert("Insert from URL [ Select ; With dialog: Off ; Target: $r ; \"https://x\" ]").status == .ok)
     }

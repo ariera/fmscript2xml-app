@@ -100,7 +100,7 @@ public struct ConversionError: Error, Sendable, CustomStringConvertible {
 ///     let result = Converter().convert("Set Variable [ $var ; Value: 1 ]")
 ///     result.xml  // <?xml version="1.0" ?>\n<fmxmlsnippet …
 public struct Converter: Sendable {
-    public static let version = "0.6.0"
+    public static let version = "0.6.1"
 
     public let registry: StepRegistry
     private let suggester: StepNameSuggester
@@ -242,7 +242,18 @@ public struct Converter: Sendable {
         if !(handler is GenericHandler) {
             let ignored = handler.ignoredLabels.union(commonIgnoredLabels)
             let labels = handler.knownLabels.union(ignored)
-            for key in step.params.keys where !key.pyIsDigit && !labels.contains(key) {
+            for (key, value) in step.params.items where !key.pyIsDigit {
+                // `“Script” from file: “File”` reads as a "… from file" label
+                let isExternalScript = externalScriptName(fromKey: key) != nil
+                let label = isExternalScript ? "From file" : key
+                if let explanation = handler.unsupportedLabels[label] {
+                    result.append(Diagnostic(
+                        .warning, .unsupportedParameter, lines: step.lines,
+                        message: "“\(isExternalScript ? "from file" : key): \(stripQuotes(value))” was ignored: \(explanation)"
+                    ))
+                    continue
+                }
+                guard !labels.contains(label) else { continue }
                 let candidates = StepNameSuggester(names: handler.knownLabels.sorted(), aliases: [:]).suggestions(for: key)
                 var message = "“\(key)” isn’t a parameter of \(def.name); it was ignored."
                 var suggestion: Suggestion?

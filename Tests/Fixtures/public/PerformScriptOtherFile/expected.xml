@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="1" name="Perform Script">
+    <FileReference id="1" name="Other_File">
+      <UniversalPathList>file:Other_File</UniversalPathList>
+    </FileReference>
+    <Calculation><![CDATA[JSONSetElement ( "{}" ; [ "key" ; $value ; JSONString ] )]]></Calculation>
+    <Script id="1" name="Ext_Task"/>
+  </Step>
+</fmxmlsnippet>

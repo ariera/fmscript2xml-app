@@ -10,6 +10,11 @@ protocol StepHandler: Sendable {
     /// Valid FileMaker labels the handler doesn't convert (no warning).
     var ignoredLabels: Set<String> { get }
 
+    /// Valid FileMaker labels the handler can't represent, with what that
+    /// means for the pasted step. Each produces an `unsupportedParameter`
+    /// warning.
+    var unsupportedLabels: [String: String] { get }
+
     /// The emitted elements: usually one `<Step>`, preceded by a helper
     /// comment when the step references database objects by name only.
     func generate(_ step: ParsedStep, _ def: StepDefinition) throws(HandlerError) -> [XElement]
@@ -23,6 +28,7 @@ let commonIgnoredLabels: Set<String> = ["Collapsed"]
 
 extension StepHandler {
     var ignoredLabels: Set<String> { [] }
+    var unsupportedLabels: [String: String] { [:] }
     var allowsDuplicateLabels: Bool { false }
     var typeName: String { String(describing: type(of: self)) }
 }
@@ -128,9 +134,35 @@ func noInteract(_ step: ParsedStep, default defaultValue: String = "On") -> XEle
     return XMLBuilder.state("NoInteract", withDialog.pyLower() == "off")
 }
 
+/// Strips surrounding straight or curly quotes (after stripping whitespace).
+func stripQuotes(_ value: String) -> String {
+    let v = value.pyStrip()
+    if v.unicodeScalars.count >= 2,
+       (v.pyStartsWith("\"") && v.pyEndsWith("\"")) || (v.pyStartsWith("“") && v.pyEndsWith("”")) {
+        return v.pyDropFirstAndLast()
+    }
+    return v
+}
+
+/// `“Name”`, as FileMaker shows a name picked from a list. Curly quotes
+/// don't delimit text in a calculation, so this is never one.
+func isCurlyQuotedName(_ value: String) -> Bool {
+    let v = value.pyStrip()
+    guard v.unicodeScalars.count >= 2, v.pyStartsWith("“"), v.pyEndsWith("”") else { return false }
+    let inner = v.pyDropFirstAndLast()
+    return !inner.pyContains("“") && !inner.pyContains("”")
+}
+
+/// A name in straight or curly quotes, as opposed to a calculation.
+func isQuotedName(_ value: String) -> Bool {
+    let v = value.pyStrip()
+    return isCurlyQuotedName(v) || (v.unicodeScalars.count >= 2 && v.pyStartsWith("\"") && v.pyEndsWith("\""))
+}
+
 /// True when a layout reference is a calculation rather than a quoted name.
 func isCalculatedReference(_ value: String) -> Bool {
-    value.pyStartsWith("$") || value.pyContains("(") || value.pyContains("&") || value.pyContains("=")
+    if isCurlyQuotedName(value) { return false }
+    return value.pyStartsWith("$") || value.pyContains("(") || value.pyContains("&") || value.pyContains("=")
         || !(value.pyStartsWith("\"") && value.pyEndsWith("\""))
 }
 

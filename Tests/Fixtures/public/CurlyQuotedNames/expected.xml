@@ -1,0 +1,93 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Script [ Specified: From list ; “Curly_Task” ; Parameter: $p ]</Text>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculation><![CDATA[$p]]></Calculation>
+    <DisplayCalculation>
+      <Calculation><![CDATA[$p]]></Calculation>
+    </DisplayCalculation>
+    <Script name="Curly_Task" id="1"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Script [ Specified: From list ; &quot;Straight_Task&quot; ; Parameter: $p ]</Text>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculation><![CDATA[$p]]></Calculation>
+    <DisplayCalculation>
+      <Calculation><![CDATA[$p]]></Calculation>
+    </DisplayCalculation>
+    <Script name="Straight_Task" id="1"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Script [ Specified: From list ; “Say &quot;hi&quot;” ]</Text>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Script name="Say &quot;hi&quot;" id="1"/>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculated>
+      <Calculation><![CDATA["Prefix_" & $x]]></Calculation>
+    </Calculated>
+  </Step>
+  <Step enable="True" id="148" name="Install OnTimer Script">
+    <Script name="Timer_Task"/>
+    <Interval>
+      <Calculation><![CDATA[5]]></Calculation>
+    </Interval>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ “Customers” ; Animation: None ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout name="Customers"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ Layout: “Customers” ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout name="Customers"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ “Orders &amp; Invoices (2024)” ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout name="Orders &amp; Invoices (2024)"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ $layout ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="LayoutNameByCalc"/>
+    <Layout>
+      <Calculation><![CDATA[$layout]]></Calculation>
+    </Layout>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ &quot;Inv&quot; &amp; $suffix ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="LayoutNameByCalc"/>
+    <Layout>
+      <Calculation><![CDATA["Inv" & $suffix]]></Calculation>
+    </Layout>
+  </Step>
+  <Step enable="True" id="74" name="Go to Related Record">
+    <Option state="False"/>
+    <MatchAllRecords state="False"/>
+    <ShowInNewWindow state="False"/>
+    <Restore state="True"/>
+    <LayoutDestination value="SelectedLayout"/>
+    <NewWndStyles Style="Document" Close="Yes" Minimize="Yes" Maximize="Yes" Resize="Yes"/>
+    <Table name="Invoices"/>
+    <Layout name="Invoice Detail"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA["x"]]></Calculation>
+    <Field name="Name" table="Customers"/>
+  </Step>
+</fmxmlsnippet>

@@ -247,8 +247,11 @@ enum SemanticComparator {
         }
     }
 
+    /// Also drops DisplayCalculation: the converter writes one on Perform
+    /// Script (as Python did) where FileMaker's own copy has none; it only
+    /// affects display.
     static func removePlatformData(_ root: Node) {
-        for n in root.iter { n.children.removeAll { $0.tag == "PlatformData" } }
+        for n in root.iter { n.children.removeAll { $0.tag == "PlatformData" || $0.tag == "DisplayCalculation" } }
     }
 
     static func normalizeWhitespace(_ root: Node) {
