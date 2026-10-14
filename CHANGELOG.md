@@ -1,5 +1,13 @@
 # Changelog
 
+## Converter 0.6.4
+
+- **Layouts shown with their table occurrence are picked by name.** FileMaker
+  shows a selected layout as `“Customers” (Customers)`. Go to Layout and Go to
+  Related Record (`Using layout:`) read that as a calculation, which isn't
+  valid, so FileMaker commented the step out on paste. The table occurrence is
+  now dropped and the layout is selected by name.
+
 ## Converter 0.6.3
 
 - **`Perform Script [ Specified: By name ; … ]` calls the calculated

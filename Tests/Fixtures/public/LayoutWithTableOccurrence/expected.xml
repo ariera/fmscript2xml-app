@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ “Customers” (Customers) ; Animation: None ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout name="Customers"/>
+  </Step>
+  <Step enable="True" id="74" name="Go to Related Record">
+    <Option state="False"/>
+    <MatchAllRecords state="False"/>
+    <ShowInNewWindow state="False"/>
+    <Restore state="True"/>
+    <LayoutDestination value="SelectedLayout"/>
+    <Name>
+      <Calculation><![CDATA[/*Show only related records*/]]></Calculation>
+    </Name>
+    <NewWndStyles Style="Document" Close="Yes" Minimize="Yes" Maximize="Yes" Resize="Yes"/>
+    <Table name="Invoices"/>
+    <Layout name="Invoice Detail"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ &quot;Customers&quot; (Customers) ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout name="Customers"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ Layout: “Order Lines (2024)” (Order Lines) ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout name="Order Lines (2024)"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ “Customers” ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout name="Customers"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ $layout ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="LayoutNameByCalc"/>
+    <Layout>
+      <Calculation><![CDATA[$layout]]></Calculation>
+    </Layout>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ &quot;Inv&quot; &amp; $suffix ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="LayoutNameByCalc"/>
+    <Layout>
+      <Calculation><![CDATA["Inv" & $suffix]]></Calculation>
+    </Layout>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Go to Layout [ GetValue ( $layouts ; 2 ) ]</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="LayoutNameByCalc"/>
+    <Layout>
+      <Calculation><![CDATA[GetValue ( $layouts ; 2 )]]></Calculation>
+    </Layout>
+  </Step>
+</fmxmlsnippet>

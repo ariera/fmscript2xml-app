@@ -159,6 +159,20 @@ func isQuotedName(_ value: String) -> Bool {
     return isCurlyQuotedName(v) || (v.unicodeScalars.count >= 2 && v.pyStartsWith("\"") && v.pyEndsWith("\""))
 }
 
+/// FileMaker shows a layout picked from the list as `“Name” (Table)`, the
+/// table occurrence in parentheses. Returns the quoted name without it;
+/// anything else is returned as is. A quoted text followed by parentheses is
+/// never a valid calculation.
+func stripLayoutTable(_ value: String) -> String {
+    let v = value.scalars.pyStrip()
+    guard let first = v.first, first == "“" || first == "\"" else { return value }
+    let close: Unicode.Scalar = first == "“" ? "”" : "\""
+    guard let end = v.dropFirst().firstIndex(of: close) else { return value }
+    let rest = Array(v[(end + 1)...]).pyStrip()
+    guard rest.first == "(", rest.last == ")" else { return value }
+    return Array(v[...end]).string
+}
+
 /// True when a layout reference is a calculation rather than a quoted name.
 func isCalculatedReference(_ value: String) -> Bool {
     if isCurlyQuotedName(value) { return false }

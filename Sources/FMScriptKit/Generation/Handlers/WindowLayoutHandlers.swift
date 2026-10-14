@@ -80,7 +80,7 @@ struct GoToLayoutHandler: StepHandler {
         let comment = XMLBuilder.helperCommentStep(step.rawText)
         var e = XMLBuilder.step(def, step)
 
-        let layoutName = step.params.get("Layout", step.params.get("0", ""))
+        let layoutName = stripLayoutTable(step.params.get("Layout", step.params.get("0", "")))
         if isCalculatedReference(layoutName) {
             e.append(XElement("LayoutDestination", ["value": "LayoutNameByCalc"]))
             e.append(XMLBuilder.wrappedCalculation("Layout", layoutName))
@@ -146,7 +146,7 @@ struct GoToRelatedRecordHandler: StepHandler {
         e.append(XMLBuilder.state("Restore", true))
 
         // LayoutDestination now; the Layout itself goes after Table
-        let layoutValue = step.params.get("Using layout", step.params.get("Layout", ""))
+        let layoutValue = stripLayoutTable(step.params.get("Using layout", step.params.get("Layout", "")))
         var layout: XElement?
         if !layoutValue.isEmpty {
             let calculated = isCalculatedReference(layoutValue)

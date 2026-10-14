@@ -1,0 +1,8 @@
+Go to Layout [ “Customers” (Customers) ; Animation: None ]
+Go to Related Record [ Show only related records ; From table: “Invoices” ; Using layout: “Invoice Detail” (Invoices) ]
+Go to Layout [ "Customers" (Customers) ]
+Go to Layout [ Layout: “Order Lines (2024)” (Order Lines) ]
+Go to Layout [ “Customers” ]
+Go to Layout [ $layout ]
+Go to Layout [ "Inv" & $suffix ]
+Go to Layout [ GetValue ( $layouts ; 2 ) ]
