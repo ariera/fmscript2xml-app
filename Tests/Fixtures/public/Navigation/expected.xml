@@ -116,7 +116,8 @@
     <ObjectName>&quot;tabPanel&quot;</ObjectName>
   </Step>
   <Step enable="True" id="99" name="Go to Portal Row">
-    <Calculation><![CDATA[Select]]></Calculation>
-    <Calculation><![CDATA[First]]></Calculation>
+    <NoInteract state="False"/>
+    <SelectAll state="True"/>
+    <RowPageLocation value="First"/>
   </Step>
 </fmxmlsnippet>

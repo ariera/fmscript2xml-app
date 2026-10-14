@@ -1,5 +1,17 @@
 # Changelog
 
+## Converter 0.6.6
+
+- **Go to Portal Row goes to the right row.** `First`, `Last`, `Next` and
+  `Previous` became a calculation FileMaker commented out (`/*First*/`), and
+  `Select` and `Exit after last` were lost. They now convert to FileMaker's
+  own options; a row given by calculation stays a calculation.
+- **Truncate Table keeps its table.** The table was dropped, so the pasted step
+  emptied the *current* table. It now names the base table, and FileMaker
+  picks it by name on paste. Careful: if no base table has that exact name,
+  FileMaker silently uses the current table instead, so a named table now
+  always gives a warning to check the pasted step.
+
 ## Converter 0.6.5
 
 - **`With dialog: Off` is kept on every step.** Steps without their own

@@ -1,0 +1,64 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="99" name="Go to Portal Row">
+    <NoInteract state="False"/>
+    <SelectAll state="True"/>
+    <RowPageLocation value="First"/>
+  </Step>
+  <Step enable="True" id="99" name="Go to Portal Row">
+    <NoInteract state="False"/>
+    <SelectAll state="True"/>
+    <RowPageLocation value="Last"/>
+  </Step>
+  <Step enable="True" id="99" name="Go to Portal Row">
+    <NoInteract state="False"/>
+    <SelectAll state="False"/>
+    <Exit state="True"/>
+    <RowPageLocation value="Next"/>
+  </Step>
+  <Step enable="True" id="99" name="Go to Portal Row">
+    <NoInteract state="False"/>
+    <SelectAll state="False"/>
+    <Exit state="False"/>
+    <RowPageLocation value="Previous"/>
+  </Step>
+  <Step enable="True" id="99" name="Go to Portal Row">
+    <NoInteract state="True"/>
+    <SelectAll state="False"/>
+    <RowPageLocation value="ByCalculation"/>
+    <Calculation><![CDATA[$row]]></Calculation>
+  </Step>
+  <Step enable="True" id="99" name="Go to Portal Row">
+    <NoInteract state="True"/>
+    <SelectAll state="True"/>
+    <RowPageLocation value="ByCalculation"/>
+    <Calculation><![CDATA[Get ( ActivePortalRowNumber ) + 1]]></Calculation>
+  </Step>
+  <Step enable="True" id="99" name="Go to Portal Row">
+    <NoInteract state="False"/>
+    <SelectAll state="False"/>
+    <RowPageLocation value="First"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Truncate Table [ With dialog: Off ; Table: “Invoices” ]</Text>
+  </Step>
+  <Step enable="True" id="182" name="Truncate Table">
+    <NoInteract state="True"/>
+    <BaseTable name="Invoices"/>
+  </Step>
+  <Step enable="True" id="182" name="Truncate Table">
+    <NoInteract state="True"/>
+    <BaseTable id="-1" name="&lt;Current Table&gt;"/>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Truncate Table [ With dialog: On ; Table: &quot;Order Lines&quot; ]</Text>
+  </Step>
+  <Step enable="True" id="182" name="Truncate Table">
+    <NoInteract state="False"/>
+    <BaseTable name="Order Lines"/>
+  </Step>
+  <Step enable="True" id="182" name="Truncate Table">
+    <NoInteract state="False"/>
+    <BaseTable id="-1" name="&lt;Current Table&gt;"/>
+  </Step>
+</fmxmlsnippet>

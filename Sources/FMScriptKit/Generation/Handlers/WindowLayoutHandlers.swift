@@ -126,6 +126,34 @@ struct GoToRecordRequestPageHandler: StepHandler {
     }
 }
 
+struct GoToPortalRowHandler: StepHandler {
+    var knownLabels: Set<String> { ["With dialog", "Select", "Exit after last"] }
+
+    func generate(_ step: ParsedStep, _ def: StepDefinition) -> [XElement] {
+        var e = XMLBuilder.step(def, step)
+        e.append(noInteract(step))
+
+        // `Select: On ; First`, or a bare `Select` as the first value
+        let positional = step.params.items.filter { $0.key.pyIsDigit }.map { $0.value.pyStrip() }
+        let select = step.params["Select"].map { $0.pyLower() == "on" }
+            ?? positional.contains { $0.pyLower() == "select" }
+        e.append(XMLBuilder.state("SelectAll", select))
+
+        let location = positional.first { $0.pyLower() != "select" } ?? "First"
+        if let named = ["First", "Last", "Next", "Previous"].first(where: { $0.pyLower() == location.pyLower() }) {
+            // Exit only exists for Next and Previous
+            if named == "Next" || named == "Previous" {
+                e.append(XMLBuilder.state("Exit", step.params.get("Exit after last", "Off").pyLower() == "on"))
+            }
+            e.append(XElement("RowPageLocation", ["value": named]))
+        } else {
+            e.append(XElement("RowPageLocation", ["value": "ByCalculation"]))
+            e.append(XMLBuilder.calculation(location))
+        }
+        return [e]
+    }
+}
+
 struct GoToRelatedRecordHandler: StepHandler {
     var knownLabels: Set<String> { ["Using layout", "Layout", "From table", "Table"] }
 

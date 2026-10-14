@@ -100,7 +100,7 @@ public struct ConversionError: Error, Sendable, CustomStringConvertible {
 ///     let result = Converter().convert("Set Variable [ $var ; Value: 1 ]")
 ///     result.xml  // <?xml version="1.0" ?>\n<fmxmlsnippet …
 public struct Converter: Sendable {
-    public static let version = "0.6.5"
+    public static let version = "0.6.6"
 
     public let registry: StepRegistry
     private let suggester: StepNameSuggester
@@ -275,6 +275,8 @@ public struct Converter: Sendable {
                 }
             }
         }
+
+        result.append(contentsOf: handler.diagnostics(step, def))
 
         if !step.isComment, out.count > 1, out.first.map(Self.isHelperComment) == true {
             result.append(Diagnostic(

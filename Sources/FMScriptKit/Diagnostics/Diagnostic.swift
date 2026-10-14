@@ -24,6 +24,9 @@ public struct Diagnostic: Sendable, Hashable, Codable {
         /// A valid FileMaker parameter the step's handler can't represent;
         /// the pasted step differs from the original.
         case unsupportedParameter
+        /// FileMaker silently substitutes another object when the name
+        /// doesn't match on paste (Truncate Table: the current table).
+        case silentFallback
         /// A named parameter given more than once; the last value is used.
         case duplicateParameter
         /// The step references a database object by name only; FileMaker

@@ -114,6 +114,14 @@ import Testing
         #expect(!result.previewXML.contains("FileReference"))
     }
 
+    @Test func truncateTableWithANamedTableWarns() {
+        let named = converter.convert("Truncate Table [ With dialog: Off ; Table: “Invoices” ]")
+        #expect(named.warnings.map(\.code) == [.silentFallback])
+        #expect(named.warnings.first?.message.contains("<Current Table>") == true)
+        #expect(converter.convert("Truncate Table [ With dialog: Off ; Table: <Current Table> ]").warnings.isEmpty)
+        #expect(converter.convert("Truncate Table [ With dialog: Off ]").warnings.isEmpty)
+    }
+
     @Test func genericStepsAcceptAnyLabel() {
         #expect(converter.convert("Insert from URL [ Select ; With dialog: Off ; Target: $r ; \"https://x\" ]").status == .ok)
     }

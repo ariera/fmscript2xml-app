@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // Perform Find, Show Custom Dialog, Open URL, Send Mail, Print, Print Setup,
-// Commit Records/Requests, Save Records as PDF, Sort Records by Field
+// Commit Records/Requests, Save Records as PDF, Sort Records by Field,
+// Truncate Table
 
 struct PerformFindHandler: StepHandler {
     var knownLabels: Set<String> { ["Restore", "Table"] }
@@ -257,5 +258,40 @@ struct SortRecordsByFieldHandler: StepHandler {
         }
         elements.append(e)
         return elements
+    }
+}
+
+struct TruncateTableHandler: StepHandler {
+    var knownLabels: Set<String> { ["With dialog", "Table"] }
+
+    func generate(_ step: ParsedStep, _ def: StepDefinition) -> [XElement] {
+        var e = XMLBuilder.step(def, step)
+        e.append(noInteract(step))
+        guard let table = Self.namedTable(step) else {
+            e.append(XElement("BaseTable", ["id": "-1", "name": "<Current Table>"]))
+            return [e]
+        }
+        // A named base table: FileMaker resolves it by name on paste. Keep
+        // the original text at hand, as this step deletes every record.
+        e.append(XElement("BaseTable", ["name": table]))
+        return [XMLBuilder.helperCommentStep(step.rawText), e]
+    }
+
+    /// FileMaker doesn't show an unknown base table as missing: it pastes
+    /// `<Current Table>` instead (verified in FileMaker, 2026-10-14).
+    func diagnostics(_ step: ParsedStep, _ def: StepDefinition) -> [Diagnostic] {
+        guard let table = Self.namedTable(step) else { return [] }
+        return [Diagnostic(
+            .warning, .silentFallback, lines: step.lines,
+            message: "If “\(table)” isn’t the exact name of a base table in the file, FileMaker pastes "
+                + "Truncate Table with <Current Table> instead, without telling you. Check the pasted "
+                + "step before running the script."
+        )]
+    }
+
+    /// The base table's name; nil for the current table.
+    static func namedTable(_ step: ParsedStep) -> String? {
+        let table = stripQuotes(step.params.get("Table", step.params.get("0", "")))
+        return table.isEmpty || table == "<Current Table>" ? nil : table
     }
 }

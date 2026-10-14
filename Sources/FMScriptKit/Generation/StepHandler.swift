@@ -21,6 +21,9 @@ protocol StepHandler: Sendable {
 
     /// True when repeated labels are expected (and re-parsed by the handler).
     var allowsDuplicateLabels: Bool { get }
+
+    /// Step-specific diagnostics, beyond the label checks every step gets.
+    func diagnostics(_ step: ParsedStep, _ def: StepDefinition) -> [Diagnostic]
 }
 
 /// Labels FileMaker writes on many steps that don't affect the XML.
@@ -30,6 +33,7 @@ extension StepHandler {
     var ignoredLabels: Set<String> { [] }
     var unsupportedLabels: [String: String] { [:] }
     var allowsDuplicateLabels: Bool { false }
+    func diagnostics(_ step: ParsedStep, _ def: StepDefinition) -> [Diagnostic] { [] }
     var typeName: String { String(describing: type(of: self)) }
 }
 
@@ -75,6 +79,8 @@ enum StepHandlers {
         "Go to Layout": GoToLayoutHandler(),
         "Go to Record/Request/Page": GoToRecordRequestPageHandler(),
         "Go to Related Record": GoToRelatedRecordHandler(),
+        "Go to Portal Row": GoToPortalRowHandler(),
+        "Truncate Table": TruncateTableHandler(),
         "Set Field": SetFieldHandler(),
         "Perform Find": PerformFindHandler(),
         "Show Custom Dialog": ShowCustomDialogHandler(),
