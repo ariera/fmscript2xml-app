@@ -259,10 +259,11 @@ notification.
 - Each fixture is a folder with `input.txt` and `expected.xml`.
 - **Public fixtures** (`Tests/Fixtures/public/`, committed): synthetic scripts
   only. Start from the Python repo's 14 `tests/fixtures/simple/` cases and the
-  root `.txt` files, **after replacing EMBO-specific names** (for example
-  `elc_grp_joi_PSUB__Person#Committee`, `SCO__Scores`, STF messages) with
-  neutral ones. Grow this set until every handler and parser edge case has
-  coverage, so CI is meaningful without production data.
+  root `.txt` files, **after replacing EMBO-specific names** (table
+  occurrences, table and field names, message texts; for example
+  `abc_xyz__Person#Group` or `TBL__Table`) with neutral ones. Grow this set
+  until every handler and parser edge case has coverage, so CI is meaningful
+  without production data.
 - **Private fixtures** (production scripts, D14): **never committed**, never
   copied into this repo's tracked tree. The conformance runner reads them from
   the directory in `FMSCRIPT_PRIVATE_FIXTURES` (on Alejandro's Mac
