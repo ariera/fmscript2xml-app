@@ -265,9 +265,9 @@ notification.
   coverage, so CI is meaningful without production data.
 - **Private fixtures** (production scripts, D14): **never committed**, never
   copied into this repo's tracked tree. The conformance runner reads them from
-  the directory in `FMSCRIPT_PRIVATE_FIXTURES` (for example the Python repo's
-  `tests/fixtures/real_world/`, 885 scripts) and skips them when the variable
-  is unset. `Tests/Fixtures/private/` is gitignored as a fallback location.
+  the directory in `FMSCRIPT_PRIVATE_FIXTURES` (on Alejandro's Mac
+  `~/dev/EMBO/fmscript2xml-private-fixtures/`, 884 scripts, outside every
+  repo) and skips them when the variable is unset. `Tests/Fixtures/private/` is gitignored as a fallback location.
 - Safeguards: `.gitignore` entries, a pre-commit hook that rejects files under
   `Tests/Fixtures/` outside `public/`, and a CI check doing the same.
 - Bug reports from production scripts become **new synthetic public
@@ -465,6 +465,10 @@ Exit: daily use replaces the Automator Quick Action.
   fixtures (the 885th entry is a README) and 32 public ones, in strict and
   continue-on-error mode (`tools/diff-against-python.sh`). The Swift
   conformance suite also passes them semantically against FileMaker's exports.
+  *Since converter 0.6.1 (2026-10-14) the outputs differ on purpose:* curly-
+  quoted names, scripts in other files, and calculated Perform Script names
+  (`Calculated:`, `Specified: By name`) are fixed in Swift only (Python is
+  frozen, D13), so `tools/diff-against-python.sh` reports those cases.
 - *Python behaviour kept for parity* (worth revisiting after the freeze):
   - Input uses universal newlines (`\r\n`, `\r` → `\n`), as Python's file
     reading and `pbpaste` do.
@@ -644,7 +648,9 @@ for this run.
 
 - The Python reference is at `~/dev/EMBO/fmscript2xml`. Read it; don't modify
   it (Q8).
-- Private fixtures: `export FMSCRIPT_PRIVATE_FIXTURES=~/dev/EMBO/fmscript2xml/tests/fixtures/real_world`.
+- Private fixtures: `export FMSCRIPT_PRIVATE_FIXTURES=~/dev/EMBO/fmscript2xml-private-fixtures`
+  (moved out of the Python repo's `tests/fixtures/real_world/` on 2026-10-14;
+  expected outputs there follow the Swift converter now).
 - Tick checklist items in this plan as they land, and append findings to the
   decisions log (§13).
 - Dev builds are ad-hoc signed. Developer ID signing and notarisation are
