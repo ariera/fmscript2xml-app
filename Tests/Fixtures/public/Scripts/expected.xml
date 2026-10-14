@@ -17,11 +17,13 @@
     <Script name="Utility_NoParam" id="1"/>
   </Step>
   <Step enable="True" id="1" name="Perform Script">
+    <Calculated>
+      <Calculation><![CDATA[$scriptName]]></Calculation>
+    </Calculated>
     <Calculation><![CDATA[$param]]></Calculation>
     <DisplayCalculation>
       <Calculation><![CDATA[$param]]></Calculation>
     </DisplayCalculation>
-    <Script name="$scriptName" id="1"/>
   </Step>
   <Step enable="True" id="1" name="Perform Script">
     <Script name="Utility_Quoted" id="1"/>

@@ -1,5 +1,13 @@
 # Changelog
 
+## Converter 0.6.3
+
+- **`Perform Script [ Specified: By name ; … ]` calls the calculated
+  script.** The calculation was used as a literal script name, so
+  `Specified: By name ; $scriptName` called a script named “$scriptName”.
+  It is now a calculated name, as is a name given as a variable
+  (`Perform Script [ $scriptName ]`), matching Perform Script on Server.
+
 ## Converter 0.6.2
 
 - **`Perform Script [ Calculated: … ]` keeps its calculation.** The script

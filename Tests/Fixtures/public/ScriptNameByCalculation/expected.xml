@@ -24,4 +24,34 @@
       <Calculation><![CDATA["Prefix_" & $x]]></Calculation>
     </Calculated>
   </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculated>
+      <Calculation><![CDATA[$scriptName]]></Calculation>
+    </Calculated>
+    <Calculation><![CDATA[$p]]></Calculation>
+    <DisplayCalculation>
+      <Calculation><![CDATA[$p]]></Calculation>
+    </DisplayCalculation>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculated>
+      <Calculation><![CDATA["Literal_Name"]]></Calculation>
+    </Calculated>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculated>
+      <Calculation><![CDATA["Prefix_" & $x]]></Calculation>
+    </Calculated>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Calculated>
+      <Calculation><![CDATA[$scriptName]]></Calculation>
+    </Calculated>
+  </Step>
+  <Step enable="True" id="89" name="Comment">
+    <Text>Original: Perform Script [ Specified: From list ; “Listed_Name” ]</Text>
+  </Step>
+  <Step enable="True" id="1" name="Perform Script">
+    <Script name="Listed_Name" id="1"/>
+  </Step>
 </fmxmlsnippet>

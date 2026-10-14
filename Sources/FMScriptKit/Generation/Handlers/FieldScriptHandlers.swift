@@ -105,10 +105,14 @@ struct PerformScriptHandler: StepHandler {
         let reference = scriptReference(step)
         let rawName = reference?.script ?? step.params.get("Script", step.params.get("0", ""))
         let scriptName = stripQuotes(rawName)
-        // The script name as a calculation: `Calculated: $name`, or text that
-        // starts with a quote but isn't a quoted name (`"Prefix_" & $x`)
+        // The script name as a calculation: `Calculated: $name`, anything
+        // `Specified: By name` (a quoted name there is a text literal), a
+        // variable, or text that starts with a quote but isn't a quoted name
+        // (`"Prefix_" & $x`)
+        let byName = step.params.get("Specified", "").pyLower().pyContains("by name")
         let calculation: String? = step.params["Calculated"].map { $0.pyStrip() }
-            ?? (!isQuotedName(rawName) && scriptName.pyStartsWith("\"") ? scriptName : nil)
+            ?? (byName || scriptName.pyStartsWith("$") || (!isQuotedName(rawName) && scriptName.pyStartsWith("\""))
+                ? rawName.pyStrip() : nil)
 
         // A calculated name, or a script in another file, comes first.
         // FileMaker resolves the data source (ID, path) and the script's ID
