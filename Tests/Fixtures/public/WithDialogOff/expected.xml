@@ -1,0 +1,121 @@
+<?xml version="1.0" ?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="9" name="Delete Record/Request">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="10" name="Delete All Records">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="16" name="Go to Record/Request/Page">
+    <NoInteract state="True"/>
+    <RowPageLocation value="ByCalculation"/>
+    <Calculation><![CDATA[3]]></Calculation>
+  </Step>
+  <Step enable="True" id="26" name="Omit Multiple Records">
+    <NoInteract state="True"/>
+    <Calculation><![CDATA[2]]></Calculation>
+  </Step>
+  <Step enable="True" id="36" name="Export Records">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="35" name="Import Records">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="39" name="Sort Records">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="42" name="Print Setup">
+    <NoInteract state="True"/>
+    <Restore state="False"/>
+  </Step>
+  <Step enable="True" id="40" name="Relookup Field Contents">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="43" name="Print">
+    <NoInteract state="True"/>
+    <Restore state="False"/>
+  </Step>
+  <Step enable="True" id="51" name="Revert Record/Request">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="63" name="Send Mail">
+    <NoInteract state="True"/>
+    <MultipleEmails state="False"/>
+    <SendViaSMTP state="False"/>
+    <SMTPEncryptionType type="SMTPEncryptionNone"/>
+    <SMTPAuthenticationType type="SMTPAuthenticationNone"/>
+  </Step>
+  <Step enable="True" id="65" name="Dial Phone">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="75" name="Commit Records/Requests">
+    <NoInteract state="True"/>
+    <Option state="False"/>
+    <ESSForceCommit state="False"/>
+  </Step>
+  <Step enable="True" id="83" name="Change Password">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="91" name="Replace Field Contents">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="95" name="Recover File">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="111" name="Open URL">
+    <NoInteract state="True"/>
+    <Calculation><![CDATA["https://example.com"]]></Calculation>
+  </Step>
+  <Step enable="True" id="99" name="Go to Portal Row">
+    <NoInteract state="True"/>
+    <Calculation><![CDATA[First]]></Calculation>
+  </Step>
+  <Step enable="True" id="104" name="Delete Portal Row">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="117" name="Execute SQL">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="143" name="Save Records as Excel">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="128" name="Perform Find/Replace">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="138" name="Re-Login">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="144" name="Save Records as PDF">
+    <NoInteract state="True"/>
+    <Option state="False"/>
+    <CreateDirectories state="False"/>
+    <Restore state="False"/>
+    <AutoOpen state="False"/>
+    <CreateEmail state="False"/>
+    <PDFOptions source="RecordsBeingBrowsed">
+      <Document>
+        <Pages AllPages="True">
+          <NumberFrom>
+            <Calculation><![CDATA[1]]></Calculation>
+          </NumberFrom>
+          <PageRange>
+            <From>
+              <Calculation><![CDATA[1]]></Calculation>
+            </From>
+            <To>
+              <Calculation><![CDATA[1]]></Calculation>
+            </To>
+          </PageRange>
+        </Pages>
+      </Document>
+      <Security allowScreenReader="True" enableCopying="True" controlEditing="AnyExceptExtractingPages" controlPrinting="HighResolution" requireControlEditPassword="False" requireOpenPassword="False"/>
+      <View magnification="100" pageLayout="SinglePage" show="PagesPanelAndPage"/>
+    </PDFOptions>
+  </Step>
+  <Step enable="True" id="160" name="Insert from URL">
+    <NoInteract state="True"/>
+  </Step>
+  <Step enable="True" id="182" name="Truncate Table">
+    <NoInteract state="True"/>
+  </Step>
+</fmxmlsnippet>

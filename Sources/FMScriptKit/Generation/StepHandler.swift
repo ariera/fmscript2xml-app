@@ -104,7 +104,10 @@ struct GenericHandler: StepHandler {
 
     func generate(_ step: ParsedStep, _ def: StepDefinition) -> [XElement] {
         var e = XMLBuilder.step(def, step)
-        for (key, value) in step.params.items {
+        // FileMaker stores "With dialog" as NoInteract, first in the step, on
+        // every step that has the option
+        if step.params.has("With dialog") { e.append(noInteract(step)) }
+        for (key, value) in step.params.items where key != "With dialog" {
             if key.pyIsDigit {
                 e.append(XMLBuilder.calculation(value))
             } else {

@@ -17,10 +17,10 @@
     <ESSForceCommit state="False"/>
   </Step>
   <Step enable="True" id="51" name="Revert Record/Request">
-    <Withdialog>Off</Withdialog>
+    <NoInteract state="True"/>
   </Step>
   <Step enable="True" id="9" name="Delete Record/Request">
-    <Withdialog>Off</Withdialog>
+    <NoInteract state="True"/>
   </Step>
   <Step enable="True" id="144" name="Save Records as PDF">
     <NoInteract state="True"/>

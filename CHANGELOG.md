@@ -1,5 +1,14 @@
 # Changelog
 
+## Converter 0.6.5
+
+- **`With dialog: Off` is kept on every step.** Steps without their own
+  converter (Delete All Records, Delete Record/Request, Truncate Table, Import
+  and Export Records, Replace Field Contents and 20 more) wrote the option as
+  an element FileMaker doesn't know, so the pasted step showed
+  `With dialog: On`. They now write it as FileMaker does; checked in
+  FileMaker on all 27 steps that have the option.
+
 ## Converter 0.6.4
 
 - **Layouts shown with their table occurrence are picked by name.** FileMaker

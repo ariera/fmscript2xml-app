@@ -43,8 +43,8 @@
   </Step>
   <Step enable="True" id="23" name="Show All Records"/>
   <Step enable="True" id="39" name="Sort Records">
+    <NoInteract state="True"/>
     <Calculation><![CDATA[Restore]]></Calculation>
-    <Withdialog>Off</Withdialog>
   </Step>
   <Step enable="True" id="89" name="Comment">
     <Text>Original: Sort Records by Field [ Descending ; Invoices::Date ]</Text>

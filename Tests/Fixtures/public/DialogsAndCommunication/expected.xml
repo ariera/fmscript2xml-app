@@ -128,8 +128,8 @@
     <SMTPAuthenticationType type="SMTPAuthenticationNone"/>
   </Step>
   <Step enable="True" id="160" name="Insert from URL">
+    <NoInteract state="True"/>
     <Calculation><![CDATA[Select]]></Calculation>
-    <Withdialog>Off</Withdialog>
     <Target>$response</Target>
     <Calculation><![CDATA["https://api.example.com"]]></Calculation>
     <Calculation><![CDATA[Verify SSL Certificates]]></Calculation>
