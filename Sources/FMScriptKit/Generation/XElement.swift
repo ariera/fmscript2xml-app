@@ -75,7 +75,9 @@ enum XMLBuilder {
         return e
     }
 
-    static func layout(_ name: String) -> XElement { XElement("Layout", ["name": name]) }
+    /// A Layout reference. Without an `id` FileMaker shows `<unknown>`; with a
+    /// placeholder `id="0"` (never a real layout) it picks the layout by name.
+    static func layout(_ name: String) -> XElement { XElement("Layout", ["id": "0", "name": name]) }
 
     static func table(_ name: String) -> XElement { XElement("Table", ["name": name]) }
 

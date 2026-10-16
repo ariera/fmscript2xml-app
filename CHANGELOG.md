@@ -1,5 +1,14 @@
 # Changelog
 
+## Converter 0.6.7
+
+- **Go to Layout finds the layout.** A layout picked by name pasted as
+  `Go to Layout [ <unknown> ]`: the layout had no ID, and FileMaker only looks
+  a layout up by name when there is one. It now carries a placeholder ID
+  (`0`, never a real layout), and FileMaker selects the layout with that name
+  on paste. Checked in FileMaker for Go to Layout; Go to Related
+  Record's `Using layout:` gets the same ID.
+
 ## Converter 0.6.6
 
 - **Go to Portal Row goes to the right row.** `First`, `Last`, `Next` and

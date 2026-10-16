@@ -160,7 +160,7 @@ import Testing
         let text = result.previewXML[span]
         #expect(text.hasPrefix("<Step enable=\"True\" id=\"89\" name=\"Comment\">"))
         #expect(text.hasSuffix("</Step>"))
-        #expect(text.contains("<Layout name=\"Invoices\"/>"))
+        #expect(text.contains("<Layout id=\"0\" name=\"Invoices\"/>"))
         #expect(result.trace(forLine: 2)?.stepName == "Go to Layout")
     }
 

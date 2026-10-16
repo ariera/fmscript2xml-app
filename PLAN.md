@@ -623,6 +623,17 @@ Exit: daily use replaces the Automator Quick Action.
   the `from file` form also lost the script name.
   **Open:** what FileMaker does when no data source of that name exists.
 
+**Fixes (2026-10-16)**
+
+- *Layouts by name:* `<Layout name="X"/>` without an `id` always pasted as
+  `<unknown>`, even when the file has a layout named exactly X. Tested in
+  FileMaker: with `id="1"` or `id="0"` the same step pasted as
+  `“X” (Table occurrence)`, so FileMaker matches by name only when an ID is
+  present. Layouts now get `id="0"` (layout IDs start at 1, so it never
+  matches another layout by ID). Departs from Python and from the Python
+  repo's `docs/layout-and-object-ids.md`, which omitted the ID. The one
+  private fixture with a `<Layout>` needs its expected output updated.
+
 ---
 
 ## 14. Implementation brief (for the implementing agent)

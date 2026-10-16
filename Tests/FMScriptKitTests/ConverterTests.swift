@@ -94,7 +94,7 @@ import Testing
         #expect(calc.contains("<Text>Original: Go to Layout [ $returnLayout ]</Text>"))
         let named = try xml(#"Go to Layout [ "MyLayout" ]"#)
         #expect(named.contains(#"<LayoutDestination value="SelectedLayout"/>"#))
-        #expect(named.contains(#"<Layout name="MyLayout"/>"#))
+        #expect(named.contains(#"<Layout id="0" name="MyLayout"/>"#))
     }
 
     @Test func disabledStepsAreNotEnabled() throws {

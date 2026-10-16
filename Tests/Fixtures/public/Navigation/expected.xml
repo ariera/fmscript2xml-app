@@ -5,14 +5,14 @@
   </Step>
   <Step enable="True" id="6" name="Go to Layout">
     <LayoutDestination value="SelectedLayout"/>
-    <Layout name="Invoices"/>
+    <Layout id="0" name="Invoices"/>
   </Step>
   <Step enable="True" id="89" name="Comment">
     <Text>Original: Go to Layout [ &quot;Invoice List&quot; ; Animation: Slide in from Right ]</Text>
   </Step>
   <Step enable="True" id="6" name="Go to Layout">
     <LayoutDestination value="SelectedLayout"/>
-    <Layout name="Invoice List"/>
+    <Layout id="0" name="Invoice List"/>
     <Animation value="Slide in from Right"/>
   </Step>
   <Step enable="True" id="89" name="Comment">
@@ -20,7 +20,7 @@
   </Step>
   <Step enable="True" id="6" name="Go to Layout">
     <LayoutDestination value="SelectedLayout"/>
-    <Layout name="Customers"/>
+    <Layout id="0" name="Customers"/>
   </Step>
   <Step enable="True" id="89" name="Comment">
     <Text>Original: Go to Layout [ $returnLayout ]</Text>
@@ -45,7 +45,7 @@
   </Step>
   <Step enable="True" id="6" name="Go to Layout">
     <LayoutDestination value="SelectedLayout"/>
-    <Layout name="Settings"/>
+    <Layout id="0" name="Settings"/>
   </Step>
   <Step enable="True" id="16" name="Go to Record/Request/Page">
     <NoInteract state="False"/>
@@ -77,7 +77,7 @@
     </Name>
     <NewWndStyles Style="Document" Close="Yes" Minimize="Yes" Maximize="Yes" Resize="Yes"/>
     <Table name="Order Lines"/>
-    <Layout name="Order Lines"/>
+    <Layout id="0" name="Order Lines"/>
   </Step>
   <Step enable="True" id="74" name="Go to Related Record">
     <Option state="False"/>

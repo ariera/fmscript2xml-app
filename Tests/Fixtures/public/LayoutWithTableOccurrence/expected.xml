@@ -5,7 +5,7 @@
   </Step>
   <Step enable="True" id="6" name="Go to Layout">
     <LayoutDestination value="SelectedLayout"/>
-    <Layout name="Customers"/>
+    <Layout id="0" name="Customers"/>
   </Step>
   <Step enable="True" id="74" name="Go to Related Record">
     <Option state="False"/>
@@ -18,28 +18,28 @@
     </Name>
     <NewWndStyles Style="Document" Close="Yes" Minimize="Yes" Maximize="Yes" Resize="Yes"/>
     <Table name="Invoices"/>
-    <Layout name="Invoice Detail"/>
+    <Layout id="0" name="Invoice Detail"/>
   </Step>
   <Step enable="True" id="89" name="Comment">
     <Text>Original: Go to Layout [ &quot;Customers&quot; (Customers) ]</Text>
   </Step>
   <Step enable="True" id="6" name="Go to Layout">
     <LayoutDestination value="SelectedLayout"/>
-    <Layout name="Customers"/>
+    <Layout id="0" name="Customers"/>
   </Step>
   <Step enable="True" id="89" name="Comment">
     <Text>Original: Go to Layout [ Layout: “Order Lines (2024)” (Order Lines) ]</Text>
   </Step>
   <Step enable="True" id="6" name="Go to Layout">
     <LayoutDestination value="SelectedLayout"/>
-    <Layout name="Order Lines (2024)"/>
+    <Layout id="0" name="Order Lines (2024)"/>
   </Step>
   <Step enable="True" id="89" name="Comment">
     <Text>Original: Go to Layout [ “Customers” ]</Text>
   </Step>
   <Step enable="True" id="6" name="Go to Layout">
     <LayoutDestination value="SelectedLayout"/>
-    <Layout name="Customers"/>
+    <Layout id="0" name="Customers"/>
   </Step>
   <Step enable="True" id="89" name="Comment">
     <Text>Original: Go to Layout [ $layout ]</Text>
